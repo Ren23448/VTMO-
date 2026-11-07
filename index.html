@@ -1,0 +1,2856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#09080d" />
+  <title>VortexMovies — Movie night starts here</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2309080d'/%3E%3Cpath d='M32 8 7 55h15l10-20 10 20h15z' fill='%239b5cff'/%3E%3Cpath d='m32 28 14 27H18z' fill='%23d4b8ff'/%3E%3C/svg%3E">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #09080d;
+      --panel: #15131b;
+      --panel-soft: #1c1924;
+      --text: #f5f2fa;
+      --muted: #a7a1b1;
+      --purple: #a56aff;
+      --purple-bright: #c19aff;
+      --line: rgba(255,255,255,.1);
+      --shadow: rgba(0,0,0,.45);
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    a { color: inherit; }
+
+    .topbar {
+      position: absolute;
+      inset: 0 0 auto;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 18px 6vw;
+      background: linear-gradient(180deg, rgba(0,0,0,.86), transparent);
+    }
+
+    .brand {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 10px;
+      color: var(--purple-bright);
+      font-size: 1.18rem;
+      font-weight: 900;
+      letter-spacing: -.055em;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 31px;
+      height: 31px;
+      place-items: center;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #c19aff, #7541c7);
+      color: #100a18;
+      box-shadow: 0 0 22px rgba(165,106,255,.28);
+    }
+
+    .nav-links {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 19px;
+      color: #e6e1ec;
+      font-size: .88rem;
+    }
+
+    .nav-links a, .nav-links button {
+      padding: 0;
+      border: 0;
+      background: none;
+      color: inherit;
+      text-decoration: none;
+      opacity: .84;
+      cursor: pointer;
+    }
+
+    .nav-links a:hover, .nav-links button:hover {
+      color: var(--purple-bright);
+      opacity: 1;
+    }
+
+    .topbar-search {
+      position: relative;
+      display: flex;
+      flex: 1 1 260px;
+      align-items: center;
+      gap: 9px;
+      max-width: 470px;
+      margin-left: auto;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 100px;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      top: 50%;
+      left: 13px;
+      width: 17px;
+      transform: translateY(-50%);
+      color: #aaa3b5;
+      pointer-events: none;
+    }
+
+    #search {
+      width: 100%;
+      height: 42px;
+      padding: 0 12px 0 39px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 9px;
+      outline: none;
+      background: rgba(17,15,23,.88);
+      color: var(--text);
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+
+    #search::placeholder { color: #aaa3b5; }
+
+    #search:focus {
+      border-color: rgba(193,154,255,.75);
+      background: rgba(21,17,30,.97);
+      box-shadow: 0 0 0 3px rgba(165,106,255,.16);
+    }
+
+    .advanced-search-toggle {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 14px;
+      border: 1px solid rgba(193,154,255,.38);
+      border-radius: 9px;
+      background: linear-gradient(145deg, rgba(165,106,255,.2), rgba(120,74,175,.12));
+      color: #eee5ff;
+      font-size: .84rem;
+      font-weight: 750;
+      cursor: pointer;
+      box-shadow: inset 0 1px rgba(255,255,255,.06);
+      transition: border-color .2s, background .2s, box-shadow .2s, transform .2s;
+    }
+
+    .advanced-search-toggle:hover {
+      transform: translateY(-1px);
+      border-color: rgba(193,154,255,.72);
+      background: linear-gradient(145deg, rgba(165,106,255,.3), rgba(120,74,175,.2));
+      box-shadow: 0 5px 18px rgba(89,52,138,.2);
+    }
+
+    .advanced-search-toggle[aria-expanded="true"] {
+      border-color: var(--purple-bright);
+      background: linear-gradient(145deg, rgba(165,106,255,.38), rgba(120,74,175,.24));
+      box-shadow: 0 0 0 3px rgba(165,106,255,.13);
+    }
+
+    .advanced-search-toggle svg { width: 17px; height: 17px; }
+
+    .filter-chevron {
+      width: 12px !important;
+      height: 12px !important;
+      margin-left: 1px;
+      color: #cdb5f5;
+      transition: transform .2s ease;
+    }
+
+    .advanced-search-toggle[aria-expanded="true"] .filter-chevron {
+      transform: rotate(180deg);
+    }
+
+    .advanced-search-panel {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      z-index: 40;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(140px, 1fr));
+      gap: 13px;
+      width: min(390px, 90vw);
+      padding: 17px;
+      border: 1px solid rgba(193,154,255,.25);
+      border-radius: 13px;
+      background: linear-gradient(145deg, #201a2a, #15121c);
+      box-shadow: 0 18px 50px rgba(0,0,0,.5), 0 0 28px rgba(136,82,197,.1);
+      animation: filter-pop .16s ease-out;
+    }
+
+    @keyframes filter-pop {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .advanced-search-panel[hidden] { display: none; }
+
+    .advanced-search-panel label {
+      display: grid;
+      gap: 6px;
+      color: #bcb3c9;
+      font-size: .76rem;
+      font-weight: 650;
+    }
+
+    .advanced-search-panel select {
+      width: 100%;
+      min-width: 0;
+      min-height: 40px;
+      padding: 0 10px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      outline: none;
+      background: #100e15;
+      color: var(--text);
+    }
+
+    .advanced-search-panel select:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(165,106,255,.13);
+    }
+
+    .profile-menu {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .profile-menu img {
+      width: 34px;
+      height: 34px;
+      border: 2px solid rgba(193,154,255,.7);
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .profile-menu-name {
+      max-width: 120px;
+      overflow: hidden;
+      color: #ded8e8;
+      font-size: .82rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 610px;
+      display: flex;
+      align-items: center;
+      padding: 135px 8vw 92px;
+      overflow: hidden;
+      isolation: isolate;
+      background: #100d16;
+    }
+
+    .hero-image {
+      position: absolute;
+      z-index: -2;
+      inset: -2%;
+      background-position: center 30%;
+      background-size: cover;
+      transform: scale(1.025);
+      transition: opacity .65s cubic-bezier(.2,.7,.2,1), transform 1.1s ease;
+    }
+
+    .hero-image.current { opacity: 1; }
+    .hero-image.next { opacity: 0; }
+
+    .hero-image.next.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .hero-image.current.fading {
+      opacity: 0;
+      transform: scale(1.055);
+    }
+
+    .hero::after {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 75% 38%, rgba(119,65,191,.22), transparent 38%),
+        linear-gradient(90deg, rgba(9,8,13,.98) 0%, rgba(9,8,13,.83) 43%, rgba(9,8,13,.24) 100%),
+        linear-gradient(0deg, var(--bg) 0%, transparent 38%);
+      content: "";
+      pointer-events: none;
+    }
+
+    .hero-play-area {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      width: min(650px, 100%);
+      padding-bottom: 12px;
+      pointer-events: none;
+      transition: opacity .24s ease, transform .24s ease;
+    }
+
+    .hero-content button, .hero-content a { pointer-events: auto; }
+
+    .hero-content.is-changing {
+      opacity: 0;
+      transform: translateY(9px);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--purple-bright);
+      font-size: .73rem;
+      font-weight: 800;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      width: 22px;
+      height: 2px;
+      background: var(--purple);
+      content: "";
+    }
+
+    .hero h1 {
+      max-width: 640px;
+      margin: 18px 0 14px;
+      font-size: clamp(2.8rem, 7vw, 5.7rem);
+      line-height: .96;
+      letter-spacing: -.065em;
+    }
+
+    .hero p {
+      max-width: 520px;
+      color: #d0c9d8;
+      line-height: 1.7;
+    }
+
+    .hero-meta { margin-top: 16px; color: #d0c9d8; font-size: .9rem; }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 17px;
+      border: 0;
+      border-radius: 7px;
+      background: var(--purple);
+      color: #130b1d;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .18s, background .18s;
+    }
+
+    .btn:hover { transform: translateY(-2px); background: var(--purple-bright); }
+
+    .btn.secondary {
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.1);
+      color: white;
+    }
+
+    .btn.secondary:hover { background: rgba(255,255,255,.18); }
+
+    .carousel-controls {
+      position: absolute;
+      right: 6vw;
+      bottom: 34px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 999px;
+      background: rgba(9,8,13,.48);
+      backdrop-filter: blur(12px);
+    }
+
+    .carousel-arrow {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 50%;
+      background: rgba(255,255,255,.07);
+      color: white;
+      font-size: 1.15rem;
+      cursor: pointer;
+    }
+
+    .carousel-arrow:hover {
+      border-color: var(--purple-bright);
+      background: rgba(165,106,255,.35);
+    }
+
+    .carousel-dots { display: flex; align-items: center; gap: 7px; padding: 0 3px; }
+
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      padding: 0;
+      border: 0;
+      border-radius: 99px;
+      background: rgba(255,255,255,.48);
+      cursor: pointer;
+      transition: width .25s ease, background .25s ease;
+    }
+
+    .carousel-dot.active { width: 24px; background: var(--purple-bright); }
+
+    .coming-soon-section {
+      padding: 28px 6vw 10px;
+    }
+
+    .coming-soon-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(150px, 250px) minmax(0, 1fr);
+      gap: clamp(18px, 4vw, 36px);
+      max-width: 1000px;
+      overflow: hidden;
+      padding: clamp(16px, 3vw, 28px);
+      border: 1px solid rgba(193,154,255,.28);
+      border-radius: 16px;
+      background:
+        radial-gradient(ellipse at 85% 20%, rgba(165,106,255,.2), transparent 40%),
+        linear-gradient(130deg, #21172e, #121018 72%);
+      box-shadow: 0 16px 42px rgba(0,0,0,.3);
+    }
+
+    .coming-soon-poster {
+      display: block;
+      width: 100%;
+      max-height: 360px;
+      aspect-ratio: 2 / 3;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 10px;
+      background: #211b2b;
+      object-fit: cover;
+      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    }
+
+    .coming-soon-copy {
+      align-self: center;
+      min-width: 0;
+    }
+
+    .coming-soon-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border: 1px solid rgba(193,154,255,.4);
+      border-radius: 999px;
+      background: rgba(165,106,255,.14);
+      color: #decaff;
+      font-size: .72rem;
+      font-weight: 850;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .coming-soon-label::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--purple-bright);
+      box-shadow: 0 0 12px var(--purple-bright);
+      content: "";
+    }
+
+    .coming-soon-copy h2 {
+      margin: 15px 0 8px;
+      font-size: clamp(1.7rem, 4vw, 2.8rem);
+      letter-spacing: -.045em;
+    }
+
+    .coming-soon-meta {
+      margin: 0;
+      color: #c9c1d2;
+      line-height: 1.6;
+    }
+
+    .coming-soon-note {
+      margin: 15px 0 0;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.65;
+    }
+
+    .coming-soon-details {
+      margin-top: 20px;
+    }
+
+    main { padding: 26px 6vw 70px; }
+
+    .continue-section,
+    .personal-home { padding: 18px 6vw 0; }
+
+    .continue-heading {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px 18px;
+      margin-bottom: 14px;
+    }
+
+    .continue-heading h2,
+    .personal-block h2 {
+      margin: 0 0 13px;
+      font-size: 1.35rem;
+      letter-spacing: -.03em;
+    }
+
+    .continue-expiry-note { margin: 0; color: var(--muted); font-size: .8rem; }
+
+    .continue-row,
+    .personal-row,
+    .similar-row {
+      display: grid;
+      grid-auto-columns: minmax(150px, 185px);
+      grid-auto-flow: column;
+      gap: 13px;
+      overflow-x: auto;
+      padding: 2px 2px 14px;
+      scrollbar-color: #514466 transparent;
+      scrollbar-width: thin;
+    }
+
+    .continue-card,
+    .personal-card,
+    .similar-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 9px;
+      background: var(--panel);
+      text-align: left;
+    }
+
+    .continue-card:hover,
+    .personal-card:hover,
+    .similar-card:hover { border-color: rgba(193,154,255,.7); }
+
+    .continue-poster {
+      position: relative;
+      display: block;
+      width: 100%;
+      padding: 0;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border: 0;
+      background: #211b2b;
+      cursor: pointer;
+    }
+
+    .continue-poster img,
+    .personal-card img,
+    .similar-card img {
+      display: block;
+      width: 100%;
+      object-fit: cover;
+      background: #211b2b;
+    }
+
+    .continue-poster img { height: 100%; }
+
+    .continue-play {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: #180d28;
+      font-size: 1.4rem;
+    }
+
+    .continue-play::before {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border: 1px solid #d7c2ff;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c19aff, #9259e5);
+      box-shadow: 0 5px 24px rgba(165,106,255,.48);
+      content: "";
+    }
+
+    .continue-play-icon { position: relative; z-index: 1; margin-left: 3px; }
+    .continue-card-info { display: grid; gap: 4px; padding: 10px 11px 11px; }
+    .continue-card-title { overflow: hidden; font-size: .85rem; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
+    .continue-card-expiry { color: var(--muted); font-size: .72rem; }
+
+    .continue-remove {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      z-index: 2;
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 50%;
+      background: rgba(8,6,12,.76);
+      color: white;
+      cursor: pointer;
+    }
+
+    .continue-remove:hover { border-color: var(--purple-bright); }
+
+    .personal-block { margin: 20px 0 25px; }
+    .personal-block h2 { margin-bottom: 12px; }
+
+    .personal-card img,
+    .similar-card img { aspect-ratio: 2 / 3; }
+
+    .personal-card-title,
+    .similar-card-title {
+      display: block;
+      overflow: hidden;
+      padding: 8px 9px 5px;
+      font-size: .82rem;
+      font-weight: 750;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .personal-card-actions { display: flex; gap: 6px; padding: 0 8px 9px; }
+
+    .personal-card-actions button {
+      flex: 1;
+      min-height: 31px;
+      padding: 5px 7px;
+      border: 1px solid rgba(193,154,255,.38);
+      border-radius: 5px;
+      background: rgba(165,106,255,.12);
+      color: #e6d5ff;
+      font-size: .73rem;
+      cursor: pointer;
+    }
+
+    .personal-card-actions button:hover { border-color: var(--purple-bright); }
+    .personal-genres { display: flex; flex-wrap: wrap; gap: 9px; }
+
+    .personal-genre {
+      padding: 8px 14px;
+      border: 1px solid rgba(193,154,255,.4);
+      border-radius: 999px;
+      background: rgba(165,106,255,.1);
+      color: #e5d5ff;
+      cursor: pointer;
+    }
+
+    .personal-genre:hover { background: rgba(165,106,255,.25); }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 10px 0 20px;
+    }
+
+    h2 { margin: 0; font-size: 1.55rem; letter-spacing: -.035em; }
+
+    .filters {
+      display: flex;
+      gap: 9px;
+      overflow-x: auto;
+      padding: 2px 0 18px;
+    }
+
+    .filter {
+      flex: 0 0 auto;
+      padding: 8px 15px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: transparent;
+      color: #c4bdcc;
+      cursor: pointer;
+    }
+
+    .filter:hover,
+    .filter.active {
+      border-color: var(--purple);
+      background: rgba(165,106,255,.13);
+      color: var(--purple-bright);
+    }
+
+    .movie-grid { display: block; }
+    .genre-shelf { margin: 0 0 30px; }
+    .genre-shelf h2 { margin: 0 0 12px; font-size: 1.28rem; }
+
+    .genre-row {
+      display: grid;
+      grid-auto-columns: clamp(145px, 16vw, 185px);
+      grid-auto-flow: column;
+      gap: 15px;
+      overflow-x: auto;
+      padding: 3px 2px 14px;
+      scrollbar-color: #514466 transparent;
+      scrollbar-width: thin;
+    }
+
+    .movie-card { min-width: 0; }
+
+    .poster {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 2 / 3;
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 10px;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(165,106,255,.34), transparent 42%),
+        linear-gradient(145deg, #25202f, #100e15 70%);
+      box-shadow: 0 10px 28px rgba(0,0,0,.3);
+    }
+
+    .poster-image { width: 100%; height: 100%; object-fit: cover; transition: transform .35s; }
+    .movie-card:hover .poster-image { transform: scale(1.055); }
+
+    .poster-action {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      width: 100%;
+      height: 100%;
+      place-items: center;
+      border: 0;
+      background: rgba(8,6,12,.32);
+      opacity: 0;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+
+    .movie-card:hover .poster-action,
+    .poster-action:focus-visible { opacity: 1; }
+
+    .play-circle {
+      display: grid;
+      width: 54px;
+      height: 54px;
+      place-items: center;
+      padding-left: 3px;
+      border: 1px solid #d7c2ff;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c19aff, #9259e5);
+      box-shadow: 0 5px 24px rgba(165,106,255,.48);
+      color: #180d28;
+      font-size: 21px;
+    }
+
+    .badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1;
+      padding: 5px 8px;
+      border-radius: 4px;
+      background: var(--purple-bright);
+      color: #160c21;
+      font-size: .65rem;
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+
+    .movie-info { padding: 11px 2px 0; }
+    .movie-title { overflow: hidden; margin: 0 0 5px; font-size: .92rem; text-overflow: ellipsis; white-space: nowrap; }
+    .movie-meta { color: var(--muted); font-size: .75rem; }
+    .card-actions { margin-top: 9px; }
+
+    .list-button,
+    .movie-card-details {
+      width: 100%;
+      min-height: 34px;
+      padding: 6px 8px;
+      border: 1px solid rgba(193,154,255,.42);
+      border-radius: 6px;
+      background: rgba(165,106,255,.09);
+      color: #dfcaff;
+      font-size: .74rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .movie-card-details {
+      margin-top: 5px;
+      border-color: rgba(193,154,255,.28);
+      background: transparent;
+      font-weight: 500;
+    }
+
+    .list-button:hover,
+    .list-button.saved,
+    .movie-card-details:hover {
+      border-color: var(--purple-bright);
+      background: rgba(165,106,255,.22);
+      color: white;
+    }
+
+    .empty-state { padding: 45px 10px; color: var(--muted); text-align: center; }
+
+    footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 24px 6vw 34px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .profile-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: grid;
+      place-items: center;
+      overflow-y: auto;
+      padding: 30px 18px;
+      background:
+        radial-gradient(ellipse at 15% 15%, rgba(111,63,180,.2), transparent 35%),
+        radial-gradient(ellipse at 85% 85%, rgba(165,106,255,.16), transparent 38%),
+        linear-gradient(145deg, #09080d, #100b19 55%, #09080d);
+    }
+
+    .profile-panel {
+      width: min(830px, 100%);
+      padding: clamp(22px, 5vw, 42px);
+      border: 1px solid rgba(211,188,255,.18);
+      border-radius: 22px;
+      background: linear-gradient(140deg, rgba(34,25,48,.94), rgba(17,15,23,.97) 54%);
+      box-shadow: 0 28px 100px rgba(0,0,0,.55), 0 0 70px rgba(130,79,197,.12);
+    }
+
+    .gate-brand { justify-content: center; margin-bottom: 25px; font-size: 1.1rem; }
+    .gate-heading { margin: 0; text-align: center; font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -.05em; }
+    .gate-subtitle { max-width: 500px; margin: 10px auto 22px; color: var(--muted); line-height: 1.6; text-align: center; }
+
+    .profile-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      width: fit-content;
+      margin: 0 auto 24px;
+      padding: 5px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 999px;
+      background: rgba(0,0,0,.24);
+    }
+
+    .profile-tab {
+      min-height: 39px;
+      padding: 0 17px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: #c6bfce;
+      cursor: pointer;
+    }
+
+    .profile-tab.active {
+      background: linear-gradient(135deg, #b888ff, #8951d3);
+      color: #160d20;
+      font-weight: 800;
+    }
+
+    .profile-view-title { margin: 0 0 16px; color: #e6d9fa; font-size: .9rem; font-weight: 750; text-align: center; }
+
+    .profile-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+      gap: 16px;
+    }
+
+    .profile-card {
+      display: grid;
+      justify-items: center;
+      gap: 11px;
+      padding: 15px 9px;
+      border: 1px solid transparent;
+      border-radius: 14px;
+      background: rgba(10,9,14,.32);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .profile-card:hover { border-color: rgba(193,154,255,.5); background: rgba(165,106,255,.1); }
+    .profile-card img { width: 82px; height: 82px; border: 2px solid rgba(193,154,255,.55); border-radius: 50%; object-fit: cover; }
+    .profile-card span { max-width: 100%; overflow: hidden; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
+    .no-profiles { grid-column: 1 / -1; padding: 22px; border: 1px dashed rgba(193,154,255,.24); border-radius: 12px; color: var(--muted); text-align: center; }
+    .profile-form { max-width: 590px; margin: 0 auto; }
+
+    .profile-form label { display: block; margin: 18px 0 8px; color: #e5dfed; font-size: .9rem; font-weight: 750; }
+
+    .profile-form input {
+      width: 100%;
+      height: 46px;
+      padding: 0 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      outline: none;
+      background: rgba(7,6,10,.6);
+      color: var(--text);
+    }
+
+    .avatar-library { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 12px; max-height: 250px; overflow-y: auto; padding: 5px 3px 12px; }
+    .avatar-choice { width: 64px; height: 64px; padding: 3px; border: 2px solid transparent; border-radius: 50%; background: transparent; cursor: pointer; }
+    .avatar-choice.selected { border-color: var(--purple-bright); box-shadow: 0 0 0 4px rgba(165,106,255,.2); }
+    .avatar-choice img { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .form-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 21px; }
+    .profile-status { margin: 14px 0 0; color: #ffc9d1; font-size: .86rem; text-align: center; }
+    .storage-note { max-width: 600px; margin: 25px auto 0; color: #938b9e; font-size: .78rem; line-height: 1.55; text-align: center; }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0,0,0,.92);
+    }
+
+    .modal.open { display: flex; }
+    .player-dialog { width: min(1000px, 100%); }
+    .player-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 12px; }
+    .player-top h2 { font-size: 1.1rem; }
+    .player-controls { display: flex; gap: 8px; }
+
+    .icon-btn {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-soft);
+      cursor: pointer;
+    }
+
+    .icon-btn:hover { border-color: var(--purple); color: var(--purple-bright); }
+    .video-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid rgba(255,255,255,.08); border-radius: 9px; background: #000; }
+    .video-frame video, .video-frame iframe { display: block; width: 100%; height: 100%; border: 0; background: #000; }
+    .video-frame video { object-fit: contain; }
+    .video-message { position: absolute; inset: 0; display: grid; place-items: center; padding: 25px; color: #ded8e8; text-align: center; line-height: 1.6; pointer-events: none; }
+    .player-note { margin: 10px 2px 0; color: var(--muted); font-size: .82rem; line-height: 1.5; }
+    .player-note a { color: var(--purple-bright); }
+
+    .details-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      overflow-y: auto;
+      padding: 24px;
+      background: rgba(0,0,0,.84);
+      backdrop-filter: blur(7px);
+    }
+
+    .details-modal[hidden] { display: none; }
+
+    .details-panel {
+      position: relative;
+      width: min(940px, 100%);
+      max-height: min(90vh, 850px);
+      overflow-y: auto;
+      padding: clamp(20px, 4vw, 36px);
+      border: 1px solid rgba(193,154,255,.22);
+      border-radius: 16px;
+      background: linear-gradient(145deg, #1d1727, #100e15 75%);
+      box-shadow: 0 24px 80px rgba(0,0,0,.55);
+    }
+
+    .details-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: rgba(10,8,14,.8);
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .details-layout { display: grid; grid-template-columns: minmax(160px, 260px) minmax(0, 1fr); gap: clamp(20px, 4vw, 38px); }
+    .details-poster { width: 100%; max-height: 390px; border-radius: 9px; background: #211b2b; object-fit: cover; }
+    .details-copy { min-width: 0; padding-right: 22px; }
+    .details-copy h2 { margin: 12px 0 8px; font-size: clamp(1.7rem, 4vw, 2.7rem); line-height: 1.05; }
+    .details-meta, .details-description { color: #c9c1d2; line-height: 1.6; }
+    .details-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 18px 0; }
+    .details-facts div { padding: 10px; border: 1px solid rgba(255,255,255,.08); border-radius: 7px; background: rgba(255,255,255,.025); }
+    .details-facts dt { margin-bottom: 4px; color: var(--muted); font-size: .72rem; }
+    .details-facts dd { margin: 0; color: #eee8f5; font-size: .86rem; line-height: 1.45; }
+    .details-rating { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin: 16px 0; }
+    .rating-stars { display: flex; gap: 3px; }
+    .rating-star { padding: 2px; border: 0; background: transparent; color: #766b84; font-size: 1.45rem; cursor: pointer; }
+    .rating-star.selected, .rating-star:hover { color: #c19aff; }
+    .rating-caption { color: var(--muted); font-size: .78rem; }
+    .details-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 15px; }
+    .similar-section { margin-top: 24px; }
+    .similar-section h3 { margin: 0 0 10px; font-size: 1.05rem; }
+    .similar-card { cursor: pointer; }
+    .similar-card:hover { border-color: var(--purple-bright); }
+
+    .search-suggestions {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      z-index: 45;
+      width: 100%;
+      max-height: min(440px, 65vh);
+      overflow-y: auto;
+      padding: 6px;
+      border: 1px solid rgba(193,154,255,.25);
+      border-radius: 12px;
+      background: linear-gradient(145deg, #201a2a, #121018 85%);
+      box-shadow: 0 18px 50px rgba(0,0,0,.62);
+      scrollbar-color: #514466 transparent;
+      scrollbar-width: thin;
+    }
+
+    .search-suggestions[hidden] { display: none; }
+
+    .search-suggestion {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+      padding: 8px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .search-suggestion:hover,
+    .search-suggestion.active { background: rgba(165,106,255,.16); }
+
+    .search-suggestion img {
+      width: 42px;
+      height: 58px;
+      border-radius: 5px;
+      background: var(--panel-soft);
+      object-fit: cover;
+    }
+
+    .search-suggestion-copy { min-width: 0; }
+
+    .search-suggestion-title,
+    .search-suggestion-meta {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .search-suggestion-title { font-size: .86rem; font-weight: 750; }
+
+    .search-suggestion-meta {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .74rem;
+    }
+
+    .search-suggestion-badge {
+      padding: 4px 6px;
+      border-radius: 4px;
+      background: rgba(193,154,255,.16);
+      color: var(--purple-bright);
+      font-size: .65rem;
+      font-weight: 800;
+    }
+
+    .search-suggestion-empty {
+      padding: 13px 10px;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    @media (max-width: 760px) {
+      .topbar { flex-wrap: wrap; gap: 12px 16px; padding: 15px 5vw; }
+      .nav-links { gap: 12px; font-size: .82rem; }
+      .topbar-search { order: 4; flex: 1 0 100%; max-width: none; }
+      .profile-menu-name { display: none; }
+      .hero { min-height: 540px; padding: 135px 6vw 90px; }
+      main, .continue-section, .personal-home, .coming-soon-section { padding-right: 5vw; padding-left: 5vw; }
+      .profile-list { grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); }
+      .carousel-controls { right: 5vw; bottom: 25px; }
+      .details-layout { grid-template-columns: 130px minmax(0, 1fr); gap: 16px; }
+      .details-poster { max-height: 210px; }
+      .coming-soon-card { grid-template-columns: 90px 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .brand { font-size: 1.02rem; }
+      .nav-links a:nth-child(2) { display: none; }
+      .hero { min-height: 500px; }
+      .hero p { font-size: .92rem; }
+      .modal { padding: 12px; }
+      .profile-gate { padding: 15px 10px; }
+      .profile-panel { padding: 23px 15px; }
+      .profile-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .avatar-library { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+      .avatar-choice { width: 54px; height: 54px; }
+      .carousel-controls { gap: 7px; }
+      .continue-row, .personal-row { grid-auto-columns: minmax(140px, 165px); }
+      .genre-row { grid-auto-columns: minmax(135px, 45vw); }
+      .advanced-search-panel { grid-template-columns: 1fr 1fr; width: min(350px, 94vw); }
+      .details-modal { padding: 10px; }
+      .details-panel { padding: 20px 14px; }
+      .details-layout { grid-template-columns: 1fr; }
+      .details-poster { width: 115px; max-height: 170px; }
+      .details-copy { padding-right: 0; }
+      .search-suggestion { grid-template-columns: 38px minmax(0,1fr) auto; }
+      .search-suggestion img { width: 38px; height: 52px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="profile-gate" id="profileGate" aria-labelledby="gateTitle">
+    <div class="profile-panel">
+      <div class="profile-panel-content">
+        <a class="brand gate-brand" href="#" aria-label="VortexMovies">
+          <span class="brand-mark" aria-hidden="true">▶</span>
+          VortexMovies
+        </a>
+        <h1 class="gate-heading" id="gateTitle">Who's watching?</h1>
+        <p class="gate-subtitle">Choose a profile or create a new one to make this movie space your own.</p>
+
+        <div class="profile-tabs" role="tablist" aria-label="Profile options">
+          <button class="profile-tab active" id="chooseProfileTab" type="button" role="tab" aria-selected="true">Choose profile</button>
+          <button class="profile-tab" id="addProfileTab" type="button" role="tab" aria-selected="false">＋ Add profile</button>
+        </div>
+
+        <section id="chooseProfileView" role="tabpanel" aria-labelledby="chooseProfileTab">
+          <p class="profile-view-title">Select a profile to continue</p>
+          <div class="profile-list" id="profileList"></div>
+        </section>
+
+        <section id="addProfileView" role="tabpanel" aria-labelledby="addProfileTab" hidden>
+          <form class="profile-form" id="profileForm">
+            <label for="profileName">What should we call you?</label>
+            <input id="profileName" name="profileName" type="text" maxlength="24" placeholder="Enter a profile name" autocomplete="nickname" required>
+            <label>Pick your avatar</label>
+            <div class="avatar-library" id="avatarOptions" role="group" aria-label="Choose an avatar from 200 options"></div>
+            <div class="form-actions">
+              <button class="btn" type="submit">Create profile</button>
+              <button class="btn secondary" id="backToProfiles" type="button">Back to profiles</button>
+            </div>
+          </form>
+        </section>
+
+        <p class="profile-status" id="profileStatus" role="status" hidden></p>
+        <p class="storage-note">Profiles and Your List are saved in this browser on this device. They are not password-protected or synced online.</p>
+      </div>
+    </div>
+  </section>
+
+  <div id="app" hidden>
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="VortexMovies home">
+        <span class="brand-mark" aria-hidden="true">▶</span>
+        VortexMovies
+      </a>
+
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#home">Home</a>
+        <a href="#movies">Movies</a>
+        <button id="myListToggle" type="button" aria-pressed="false">Your List</button>
+      </nav>
+
+      <div class="topbar-search">
+        <label class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m20 20-4-4"></path>
+          </svg>
+          <input id="search" type="search" placeholder="Search movies..." autocomplete="off" aria-label="Search movies" role="combobox" aria-autocomplete="list" aria-expanded="false" />
+        </label>
+
+        <div class="search-suggestions" id="searchSuggestions" hidden role="listbox" aria-label="Movie search suggestions"></div>
+
+        <button class="advanced-search-toggle" id="advancedSearchToggle" type="button" aria-expanded="false" aria-controls="advancedSearchPanel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h9M17 7h3M4 17h3M11 17h9"></path>
+            <circle cx="15" cy="7" r="2"></circle>
+            <circle cx="9" cy="17" r="2"></circle>
+          </svg>
+          <span>Filters</span>
+          <svg class="filter-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m5 7.5 5 5 5-5"></path>
+          </svg>
+        </button>
+
+        <div class="advanced-search-panel" id="advancedSearchPanel" hidden>
+          <label>
+            <span>Genre</span>
+            <select id="advancedGenreFilter" aria-label="Filter by genre">
+              <option value="All">All genres</option>
+            </select>
+          </label>
+          <label>
+            <span>Release year</span>
+            <select id="yearFilter" aria-label="Filter by release year">
+              <option value="all">All years</option>
+            </select>
+          </label>
+          <label>
+            <span>Type</span>
+            <select id="typeFilter" aria-label="Filter by movie or TV show">
+              <option value="all">Movies and TV</option>
+              <option value="Movie">Movies</option>
+              <option value="TV">TV shows</option>
+            </select>
+          </label>
+          <label>
+            <span>Sort by</span>
+            <select id="sortFilter" aria-label="Sort movies">
+              <option value="default">Default order</option>
+              <option value="az">A–Z</option>
+              <option value="recent">Recently added</option>
+              <option value="rated">Highest rated</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="profile-menu">
+        <img id="activeAvatar" src="" alt="">
+        <span class="profile-menu-name" id="activeProfileName"></span>
+        <button class="icon-btn" id="switchProfile" type="button" title="Switch profile" aria-label="Switch profile">⇄</button>
+      </div>
+    </header>
+
+    <section class="hero" id="home" aria-label="Featured movies">
+      <div class="hero-image current" id="heroImageCurrent" aria-hidden="true"></div>
+      <div class="hero-image next" id="heroImageNext" aria-hidden="true"></div>
+      <button class="hero-play-area" id="heroPlayArea" type="button" aria-label="Play featured movie"></button>
+      <div class="hero-content" id="heroContent">
+        <span class="eyebrow" id="heroEyebrow">Featured movie</span>
+        <h1 id="heroTitle">Your next movie night.</h1>
+        <p id="heroDescription">Explore your movie collection, search by title or genre, and save favorites to Your List.</p>
+        <div class="hero-meta" id="heroMeta"></div>
+        <div class="hero-actions">
+          <button class="btn" id="featuredPlay" type="button"><span aria-hidden="true">▶</span> Play featured</button>
+          <button class="btn secondary" id="featuredListButton" type="button">＋ Add to Your List</button>
+          <a class="btn secondary" href="#movies">Browse movies</a>
+        </div>
+      </div>
+      <div class="carousel-controls" aria-label="Featured movie controls">
+        <button class="carousel-arrow" id="carouselPrevious" type="button" aria-label="Previous featured movie">‹</button>
+        <div class="carousel-dots" id="carouselDots" aria-label="Choose featured movie"></div>
+        <button class="carousel-arrow" id="carouselNext" type="button" aria-label="Next featured movie">›</button>
+      </div>
+    </section>
+
+    <section class="coming-soon-section" id="comingSoonSection" aria-label="Coming soon" hidden>
+      <article class="coming-soon-card">
+        <img class="coming-soon-poster" id="comingSoonPoster" src="" alt="">
+        <div class="coming-soon-copy">
+          <span class="coming-soon-label">Coming Soon</span>
+          <h2 id="comingSoonTitle"></h2>
+          <p class="coming-soon-meta" id="comingSoonMeta"></p>
+          <p class="coming-soon-note">Coming soon to VortexMovies. Check back for updates!</p>
+          <button class="btn secondary coming-soon-details" id="comingSoonDetails" type="button">
+            Movie information
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <section class="continue-section" id="continueSection" aria-labelledby="continueTitle" hidden>
+      <div class="continue-heading">
+        <h2 id="continueTitle">Continue Watching</h2>
+        <p class="continue-expiry-note">Continue watching will delete automatically after 37 hours</p>
+      </div>
+      <div class="continue-row" id="continueRow"></div>
+    </section>
+
+    <section class="continue-section" id="recentlyWatchedBlock" aria-labelledby="recentlyWatchedTitle" hidden>
+      <div class="continue-heading">
+        <h2 id="recentlyWatchedTitle">Recently Watched</h2>
+      </div>
+      <div class="personal-row" id="recentlyWatchedRow"></div>
+    </section>
+
+    <section class="personal-home" id="personalHome">
+      <section class="personal-block" id="recommendationsBlock" hidden>
+        <h2>Recommended for you</h2>
+        <div class="personal-row" id="recommendationsRow"></div>
+      </section>
+      <section class="personal-block" id="favoriteGenresBlock" hidden>
+        <h2>Your favorite genres</h2>
+        <div class="personal-genres" id="favoriteGenresRow"></div>
+      </section>
+      <section class="personal-block" id="becauseBlock" hidden>
+        <h2 id="becauseTitle">Because you watched...</h2>
+        <div class="personal-row" id="becauseRow"></div>
+      </section>
+    </section>
+
+    <main id="movies">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">The collection</span>
+          <h2 id="collectionTitle" style="margin-top:8px">Browse movies</h2>
+        </div>
+      </div>
+      <div class="filters" id="filters" aria-label="Filter by genre"></div>
+      <div class="movie-grid" id="movieGrid" aria-live="polite"></div>
+    </main>
+
+    <footer>
+      <span><strong style="color:#ded0ff">VortexMovies</strong> &nbsp; Your personal movie collection.</span>
+      <span>Only stream or share content you have permission to use.</span>
+    </footer>
+  </div>
+
+  <div class="modal" id="playerModal" role="dialog" aria-modal="true" aria-labelledby="playerTitle">
+    <div class="player-dialog">
+      <div class="player-top">
+        <h2 id="playerTitle">Now playing</h2>
+        <div class="player-controls">
+          <button class="icon-btn" id="fullscreenBtn" type="button" aria-label="Enter fullscreen" title="Fullscreen">⛶</button>
+          <button class="icon-btn" id="closeBtn" type="button" aria-label="Close player" title="Close">✕</button>
+        </div>
+      </div>
+      <div class="video-frame" id="videoFrame">
+        <iframe id="drivePlayer" title="Google Drive video player" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="no-referrer" hidden></iframe>
+        <video id="videoPlayer" controls playsinline preload="metadata" hidden></video>
+        <div class="video-message" id="videoMessage" role="status" hidden></div>
+      </div>
+      <p class="player-note" id="playerNote" hidden>
+        <a id="openDriveLink" href="#" target="_blank" rel="noopener noreferrer"></a>
+      </p>
+    </div>
+  </div>
+
+  <div class="details-modal" id="detailsModal" role="dialog" aria-modal="true" aria-labelledby="detailsTitle" hidden>
+    <article class="details-panel">
+      <button class="details-close" id="detailsClose" type="button" aria-label="Close movie details">×</button>
+      <div class="details-layout">
+        <img class="details-poster" id="detailsPoster" alt="">
+        <div class="details-copy">
+          <span class="eyebrow">Movie details</span>
+          <h2 id="detailsTitle"></h2>
+          <p class="details-meta" id="detailsMeta"></p>
+          <p class="details-description" id="detailsDescription"></p>
+          <dl class="details-facts">
+            <div><dt>Genre</dt><dd id="detailsGenre"></dd></div>
+            <div><dt>Runtime</dt><dd id="detailsRuntime"></dd></div>
+            <div><dt>Director</dt><dd id="detailsDirector"></dd></div>
+            <div><dt>Cast</dt><dd id="detailsCast"></dd></div>
+          </dl>
+          <div class="details-rating">
+            <span>Your rating</span>
+            <div class="rating-stars" id="ratingStars" role="group" aria-label="Rate this movie from one to five stars"></div>
+            <span class="rating-caption" id="ratingCaption"></span>
+          </div>
+          <div class="details-actions">
+            <button class="btn" id="detailsPlay" type="button">▶ Play movie</button>
+            <a class="btn secondary" id="detailsTrailer" href="#" target="_blank" rel="noopener noreferrer">▶ Find trailer</a>
+          </div>
+          <section class="similar-section" id="similarSection" hidden>
+            <h3>Similar movies</h3>
+            <div class="similar-row" id="similarRow"></div>
+          </section>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "vortexMoviesProfiles_v1";
+    const RATINGS_KEY = "vortexMoviesRatings_v1";
+    const CONTINUE_WATCHING_TTL = 37 * 60 * 60 * 1000;
+    const AVATARS = Array.from({ length: 70 }, (_, i) => `https://i.pravatar.cc/160?img=${i + 1}`);
+
+    const movies = [
+      { id:"spider-man-homecoming", title:"Spider-Man: Homecoming", year:2017, genre:"Action", rating:"PG-13", badge:"Featured", poster:"https://image.tmdb.org/t/p/w500/c24sv2weTHPsmDa7jEMN0m2P3RT.jpg", mediaUrl:"https://drive.google.com/file/d/1I9PYrrRLo1m_5Wtfq59L6gHGa3NaUXDv/view" },
+      { id:"spider-man-far-from-home", title:"Spider-Man: Far From Home", year:2019, genre:"Action", rating:"PG-13", badge:"", poster:"https://image.tmdb.org/t/p/w500/4q2NNj4S5dG2RLF9CpXsej7yXl.jpg", mediaUrl:"https://drive.google.com/file/d/1YFUpSLmxb6xIlbdJXScIkRYvwYxvJ_18/view" },
+      { id:"spider-man-no-way-home", title:"Spider-Man: No Way Home", year:2021, genre:"Action", rating:"PG-13", badge:"", poster:"https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg", mediaUrl:"https://drive.google.com/file/d/1oddQM8w-8UqQIvB-fPpy1h-7xvAbklmA/view" },
+      { id:"inside-out", title:"Inside Out", year:2015, genre:"Animation", rating:"PG", badge:"", poster:"https://image.tmdb.org/t/p/w500/2H1TmgdfNtsKlU9jKdeNyYL5y8T.jpg", mediaUrl:"https://drive.google.com/file/d/1e0OdhlzTKWie6TDXNDOKjKYXbfYfmz6t/view" },
+      { id:"inside-out-2", title:"Inside Out 2", year:2024, genre:"Animation", rating:"PG", badge:"", poster:"https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg", mediaUrl:"https://drive.google.com/file/d/1SABVZNMwHTME4hsFwL9IWyWZPKDTBSoT/view" },
+      { id:"the-lorax", title:"The Lorax", year:2012, genre:"Animation", rating:"PG", badge:"", poster:"https://image.tmdb.org/t/p/w500/tePFnZFw5JvjwjQjaKkqDPNMLPU.jpg", mediaUrl:"https://drive.google.com/file/d/1Kl4ieKALPoEYbllsRy7V8AYiPtJATg7W/view" },
+      { id:"venom", title:"Venom", year:2018, genre:"Action", rating:"PG-13", badge:"", poster:"https://image.tmdb.org/t/p/w500/2uNW4WbgBXL25BAbXGLnLqX71Sw.jpg", mediaUrl:"https://drive.google.com/file/d/1lbDigsHVXpiIT3qokPLcN3VKqDax7rgm/view" },
+      { id:"jurassic-park", title:"Jurassic Park", year:1993, genre:"Adventure", rating:"PG-13", badge:"", poster:"https://cdn.posteritati.com/posters/000/000/072/004/jurassic-park-md-web.jpg", mediaUrl:"https://drive.google.com/file/d/1bB65cEOgbz2Y0ic6nGDZfUQlECXBk2qt/view" },
+      { id:"lost-world-jurassic-park", title:"The Lost World: Jurassic Park", year:1997, genre:"Adventure", rating:"PG-13", badge:"", poster:"https://image.tmdb.org/t/p/w500/jElpCJkSaRPYwIMwZY28gOKV7BK.jpg", mediaUrl:"https://drive.google.com/file/d/15okru5XkkghrsKUfQJaFUTUHxHF_o9a1/view" },
+      { id:"jurassic-park-iii", title:"Jurassic Park III", year:2001, genre:"Adventure", rating:"PG-13", badge:"", poster:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfS_D0MrrY0dqlSOf-k-pubfRxiXGeOOlwN_E0SbZQ48wZSRHTM4qRZHE:https://i.ebayimg.com/images/g/7QAAAOSwAGNn0voY/s-l1200.jpg&s=10", mediaUrl:"https://drive.google.com/file/d/1W9RJS1N_rBcNFAA73Y3B6leLhhjXXY9k/view" },
+      { id:"jurassic-world", title:"Jurassic World", year:2015, genre:"Adventure", rating:"PG-13", badge:"", poster:"https://image.tmdb.org/t/p/w500/rhr4y79GpxQF9IsfJItRXVaoGs4.jpg", mediaUrl:"https://drive.google.com/file/d/1oD0MwA_C9OVb7HeO70m9gAAs-dbm9SJG/view" },
+      { id:"jurassic-world-fallen-kingdom", title:"Jurassic World: Fallen Kingdom", year:2018, genre:"Adventure", rating:"PG-13", badge:"", poster:"https://image.tmdb.org/t/p/w500/c9XxwwhPHdaImA2f1WEfEsbhaFB.jpg", mediaUrl:"https://drive.google.com/file/d/1YgPR4Ulx3eC3VAgnJexxmuaMwKTpAu6-/view" },
+      { id:"jurassic-world-dominion", title:"Jurassic World Dominion", year:2022, genre:"Adventure", rating:"PG-13", badge:"", poster:"https://image.tmdb.org/t/p/w500/kAVRgw7GgK1CfYEJq8ME6EvRIgU.jpg", mediaUrl:"https://drive.google.com/file/d/1x84uwAQzm7-j9MhDdNF5sb_jCRQFhjIa/view" },
+      { id:"the-purge", title:"The Purge", year:2013, genre:"Horror", rating:"R", badge:"", poster:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTI4ETfKk20FokR4OhDLYbU9AvXAmyQnkjAFCY7IaggeY45xkEXcSiSwqdq:https://i.ebayimg.com/00/s/MTYwMFgxMDgw/z/kkkAAOSwtthkoXmK/%24_57.JPG%3Fset_id%3D880000500F&s=10", mediaUrl:"https://drive.google.com/file/d/1PFz-u8_kVFY8Z--NyloACB1DUwiT0oK4/view" },
+      { id:"the-purge-anarchy", title:"The Purge: Anarchy", year:2014, genre:"Horror", rating:"R", badge:"", poster:"https://i.ebayimg.com/images/g/4-wAAOSwvHFm9IGQ/s-l400.jpg", mediaUrl:"https://drive.google.com/file/d/1d7FFXzRf0u7L23AqH-HsUua_kA8a_edQ/view" },
+      { id:"the-purge-election-year", title:"The Purge: Election Year", year:2016, genre:"Horror", rating:"R", badge:"", poster:"https://m.media-amazon.com/images/I/71qd+kIgYeL.jpg", mediaUrl:"https://drive.google.com/file/d/1TmtXANeLZHYqnxcjn5JsiO2LMi6J7H_z/view" },
+      { id:"john-wick", title:"John Wick", year:2014, genre:"Action", rating:"R", badge:"", poster:"https://image.tmdb.org/t/p/w500/fZPSd91yGE9fCcCe6OoQr6E3Bev.jpg", mediaUrl:"https://drive.google.com/file/d/1X9Kflcg0LuRjceV6JghCzs49px8cRTIk/view" },
+      { id:"john-wick-chapter-2", title:"John Wick: Chapter 2", year:2017, genre:"Action", rating:"R", badge:"", poster:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnJVM8RRoycYk-lps42Bo8vnV6SLYO-6LVoDeHqRi1GB6dA0fddu89QGT2:https://m.media-amazon.com/images/M/MV5BMjE2NDkxNTY2M15BMl5BanBnXkFtZTgwMDc2NzE0MTI%40._V1_.jpg&s=10", mediaUrl:"https://drive.google.com/file/d/1gzsZEVTNEb93tSa0nuzlpR2n20D4Dyx9/view" },
+      { id:"john-wick-chapter-3", title:"John Wick: Chapter 3 - Parabellum", year:2019, genre:"Action", rating:"R", badge:"", poster:"https://image.tmdb.org/t/p/w500/ziEuG1essDuWuC5lpWUaw1uXY2O.jpg", mediaUrl:"https://drive.google.com/file/d/1CsIZrKGXn557DdOJrdz5ty7nkg0i4CWR/view" },
+      { id:"mr-peabody-and-sherman", title:"Mr. Peabody & Sherman", year:2014, genre:"Animation", rating:"PG", badge:"", poster:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXbm6CaE6mjwBoiCxFMJ5eoOqlOUvTjRJjsKLzZDT6nGyD5gN2bFcuL1k&s=10", mediaUrl:"https://drive.google.com/file/d/1u-kPYPj5EqzihQMjeuKEqz_6LgH4rKsr/view" },
+      { id:"joker-2019", title:"Joker", year:2019, genre:"Drama", rating:"R", badge:"", poster:"https://image.tmdb.org/t/p/w500/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg", mediaUrl:"https://drive.google.com/file/d/1__wCd7uV9s7qY-o7qZ6F1lO9UQPV7B90/view" },
+      { id:"avatar-2009", title:"Avatar", year:2009, genre:"Sci-Fi", rating:"PG-13", badge:"", poster:"https://image.tmdb.org/t/p/w500/jRXYjXNq0Cs2TcJjLkki24MLp7u.jpg", mediaUrl:"https://drive.google.com/file/d/1TaiaWnOruQUmvlNlyoHEl3EoM4zeV4oe/view" },
+      { id:"good-burger", title:"Good Burger", year:1997, genre:"Comedy", rating:"PG", badge:"", poster:"https://m.media-amazon.com/images/M/MV5BMjM4NzUxMDczMF5BMl5BanBnXkFtZTgwNDAxMzgwMzE@._V1_.jpg", mediaUrl:"https://drive.google.com/file/d/1vZqAIXXdJqtxt5bFcr821Q8m6B_1GZF_/view" },
+      { id:"pirates-on-stranger-tides", title:"Pirates of the Caribbean: On Stranger Tides", year:2011, genre:"Adventure", rating:"PG-13", badge:"", poster:"https://image.tmdb.org/t/p/w500/keGfSvCmYj7CvdRx36OdVrAEibE.jpg", mediaUrl:"https://drive.google.com/file/d/1Nc5QxL1XnvFJy6aNQ2s1j_TwtwqWRjoY/view" },
+      { id:"independence-day", title:"Independence Day", year:1996, genre:"Sci-Fi", rating:"PG-13", badge:"", poster:"https://i.ebayimg.com/images/g/WCAAAOSw7m9a~0uN/s-l1200.jpg", mediaUrl:"https://drive.google.com/file/d/1GEaZcHC96FNeSD78kIxZHiMWcFOIgKmR/view" },
+      { id:"the-wolverine", title:"The Wolverine", year:2013, genre:"Action", rating:"PG-13", badge:"", poster:"https://m.media-amazon.com/images/I/71PbfaU+SyL._AC_UF894,1000_QL80_.jpg", mediaUrl:"https://drive.google.com/file/d/0BzeqnwcztH5cRERqUGl6TFkyc3M/view?resourcekey=0--S8rnshNZ6cP5uYrkFu3WA" },
+      { id:"elf", title:"Elf", year:2003, genre:"Comedy", rating:"PG", badge:"", poster:"https://i.ebayimg.com/images/g/5hMAAOSw5CtimQEK/s-l400.jpg", mediaUrl:"https://drive.google.com/file/d/1aus7IcL_iSNmvkKohgiZCjNoCmztRehu/view" },
+      { id:"kung-fu-panda", title:"Kung Fu Panda", year:2008, genre:"Animation", rating:"PG", badge:"", poster:"https://m.media-amazon.com/images/M/MV5BZDU5MDNiMGItYjVmZi00NDUxLTg2OTktNGE0NzNlNzM4NzgyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", mediaUrl:"https://drive.google.com/file/d/0B5QJgBuViQvxMExwdFd4LXp1cjQ/view?resourcekey=0--AymX6yocYDSRtZ5jQFm1g" },
+      { id:"the-angry-birds-movie", title:"The Angry Birds Movie", year:2016, genre:"Animation", rating:"PG", badge:"", poster:"https://i.ebayimg.com/images/g/kDEAAOSwh9hnK42n/s-l1200.jpg", mediaUrl:"https://drive.google.com/file/d/0B4hN7fniyzpwalFxaEl3Tm5nLVU/view?resourcekey=0-ANoY0MoL3TgANh4nqeyZtQ" },
+      { id:"despicable-me", title:"Despicable Me", year:2010, genre:"Animation", rating:"PG", badge:"", poster:"https://m.media-amazon.com/images/M/MV5BMTY3NjY0MTQ0Nl5BMl5BanBnXkFtZTcwMzQ2MTc0Mw@@._V1_FMjpg_UX1000_.jpg", mediaUrl:"https://drive.google.com/file/d/1O1NlRelSTKmHf75-R2Q1MxN2tDM7qKdj/view" },
+      { id:"despicable-me-2", title:"Despicable Me 2", year:2013, genre:"Animation", rating:"PG", badge:"", poster:"https://m.media-amazon.com/images/I/51uZ3fsBe3L._AC_UF894,1000_QL80_.jpg", mediaUrl:"https://drive.google.com/file/d/1NkaXEdPuvzKG_LhBzL0cc_pYSxbx2WHY/view" },
+      { id:"despicable-me-3", title:"Despicable Me 3", year:2017, genre:"Animation", rating:"PG", badge:"", poster:"https://i.ebayimg.com/images/g/S0kAAOSwzwxarD0l/s-l1200.jpg", mediaUrl:"https://drive.google.com/file/d/1wK-_cMu1BN6TOmXr486NqOAmcU_bX_lb/view" },
+      { id:"gullivers-travels", title:"Gulliver's Travels", year:2010, genre:"Comedy", rating:"PG", badge:"", poster:"https://m.media-amazon.com/images/M/MV5BMjI1NDU1MjcxN15BMl5BanBnXkFtZTcwODczNTM1Mw@@._V1_FMjpg_UX1000_.jpg", mediaUrl:"https://drive.google.com/file/d/0B6lIkxTshK4KTTh0RDlsSzN3Z0U/view?resourcekey=0-XfjX5Cc6t5WQVrVGr2Rrrg" },
+      { id:"dodgeball", title:"Dodgeball", year:2004, genre:"Comedy", rating:"PG-13", badge:"", poster:"https://i.ebayimg.com/images/g/FcsAAOSwi99l2sbe/s-l1200.jpg", mediaUrl:"https://drive.google.com/file/d/0B8oerU1d9p_ta2lHekdKeDQxekE/view?resourcekey=0-fu98BCeLfAdWKtFRewzNig" },
+      
+      { id:"Spiderman-brand-new-day", title:"Spider-Man: Brand New Day", year:2026, genre:"Action", rating:"PG-13", badge:"New", poster:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-_mb13aiXnVo9KCfyNfWJKXzr5i-AF5IyWYSiYuhCC2gZv-Pvs6lT7hpJ&s=10", mediaUrl:"https://drive.google.com/file/d/1xS-Bx_5Bm3_PCdRbQtJdU3xoiPINNBgA/view?t=6.66" },
+
+      { id:"Harry-Potter1", title:"Harry Potter and the Philosopher's Stone", year:2001, genre:"Adventure", rating:"PG-13", badge:"", poster:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnD5G1vm8r_z-m9gGQy1G_Og6em7CarIqoYeNEnzIOTebYoIBYL-UXKEM&s=10", mediaUrl:"https://drive.google.com/file/d/1xAQ3O7e9bbZ9NFPMHyyOqQZO_eHk39Pe/view?t=8.69" },
+      { id:"Harry-Potter2", title:"Harry Potter and the Chamber of Secrets", year:2002, genre:"Adventure", rating:"PG-13", badge:"", poster:"https://i.ebayimg.com/00/s/MTIyNVg4MzA=/z/PDQAAOSw~gRV3MYT/$_57.JPG?set_id=880000500F", mediaUrl:"https://drive.google.com/file/d/1yVRoq_tpbLmfa4W-6GdYtRF1vs4lz3XS/view?t=8.081" },
+      { id:"Harry-Potter3", title:"Harry Potter and the Prisoner of Azkaban ", year:2004, genre:"Adventure", rating:"PG-13", badge:"", poster:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQkK8rY2MINPlCpVKaRWpH2VWnOX5BBj04GFvtpwBlgA&s", mediaUrl:"https://drive.google.com/file/d/1dsaGR3fqJ6Y1rtz3kSsGVCe8N3bANriY/view?t=11.654" },
+      { id:"Harry-Potter4", title:"Harry Potter and the Goblet of Fire", year:2005, genre:"Adventure", rating:"PG-13", badge:"", poster:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEUQVFtQDv6rzCrNxkp6TPcZw4RQvEPjlmTfD55OKk7A&s", mediaUrl:"https://drive.google.com/file/d/1myS-dF0rj5-jJgKM4_WxTP_0Pp6anh1T/view?t=5.097" },
+      { id:"avg-AU", title:"Avengers: Age of Ultron", year:2012, genre:"Action", rating:"PG-13", badge:"", poster:"https://i.ebayimg.com/images/g/~FsAAOSwYMlfJHpc/s-l1200.jpg", mediaUrl:"https://drive.google.com/file/d/1cxu6_xoUI98k_bmn3kc2CvE5K_VwYDe1/view?t=9.722" },
+      { id:"coco", title:"Coco", year:2017, genre:"Animation", rating:"PG-13", badge:"", poster:"https://i.ebayimg.com/images/g/X3UAAOSweg5lZyLK/s-l1200.jpg", mediaUrl:"https://drive.google.com/file/d/1cALRdp_wFCQPE9qfNd59hyNdI76UT7Pq/view?t=13.14" },
+      
+      
+
+      //This section is reserved for show's and seasons
+      //This section is reserved for show's and seasons
+
+      { id:"Death-note", title:"Death Note", year:2003, genre:"Anime", rating:"PG-13", badge:"Coming soon!", poster:"https://m.media-amazon.com/images/I/716ASj7z2GL._AC_UF894,1000_QL80_.jpg", mediaUrl:"" }
+
+      //End of section reserved for show's and seasons
+    ];
+
+    const featuredIds = [
+      "Spiderman-brand-new-day",
+      "Harry-Potter1",
+      "john-wick-chapter-2",
+      "dodgeball"
+    ];
+
+    const profileGate = document.getElementById("profileGate");
+    const app = document.getElementById("app");
+    const profileList = document.getElementById("profileList");
+    const chooseProfileView = document.getElementById("chooseProfileView");
+    const addProfileView = document.getElementById("addProfileView");
+    const chooseProfileTab = document.getElementById("chooseProfileTab");
+    const addProfileTab = document.getElementById("addProfileTab");
+    const profileForm = document.getElementById("profileForm");
+    const profileNameInput = document.getElementById("profileName");
+    const avatarOptions = document.getElementById("avatarOptions");
+    const profileStatus = document.getElementById("profileStatus");
+    const grid = document.getElementById("movieGrid");
+    const filters = document.getElementById("filters");
+    const search = document.getElementById("search");
+    const searchSuggestions = document.getElementById("searchSuggestions");
+    const yearFilter = document.getElementById("yearFilter");
+    const typeFilter = document.getElementById("typeFilter");
+    const sortFilter = document.getElementById("sortFilter");
+    const advancedGenreFilter = document.getElementById("advancedGenreFilter");
+    const advancedSearchToggle = document.getElementById("advancedSearchToggle");
+    const advancedSearchPanel = document.getElementById("advancedSearchPanel");
+    const modal = document.getElementById("playerModal");
+    const video = document.getElementById("videoPlayer");
+    const drivePlayer = document.getElementById("drivePlayer");
+    const videoMessage = document.getElementById("videoMessage");
+    const videoFrame = document.getElementById("videoFrame");
+    const playerNote = document.getElementById("playerNote");
+    const openDriveLink = document.getElementById("openDriveLink");
+    const continueSection = document.getElementById("continueSection");
+    const continueRow = document.getElementById("continueRow");
+    const recentlyWatchedBlock = document.getElementById("recentlyWatchedBlock");
+    const recentlyWatchedRow = document.getElementById("recentlyWatchedRow");
+    const personalHome = document.getElementById("personalHome");
+    const heroContent = document.getElementById("heroContent");
+    const heroImageCurrent = document.getElementById("heroImageCurrent");
+    const heroImageNext = document.getElementById("heroImageNext");
+    const hero = document.querySelector(".hero");
+    const detailsModal = document.getElementById("detailsModal");
+
+    let profiles = loadProfiles();
+    let activeProfile = null;
+    let activeGenre = "All";
+    let showMyList = false;
+    let selectedAvatarIndex = 0;
+    let activeFeaturedIndex = 0;
+    let carouselTimer = null;
+    let textTimer = null;
+    let imageTimer = null;
+    let continueExpiryTimer = null;
+    let currentDetailsMovieId = null;
+
+    let currentSuggestions = [];
+    let activeSuggestionIndex = -1;
+
+    const featuredMovies = featuredIds.map(id => movies.find(movie => movie.id === id)).filter(Boolean);
+
+    function renderComingSoon() {
+      const movie = movies.find(item => /coming soon/i.test(item.badge || ""));
+      const section = document.getElementById("comingSoonSection");
+      if (!movie) {
+        section.hidden = true;
+        return;
+      }
+
+      section.hidden = false;
+      document.getElementById("comingSoonPoster").src = movie.poster;
+      document.getElementById("comingSoonPoster").alt = `${movie.title} poster`;
+      document.getElementById("comingSoonTitle").textContent = movie.title;
+      document.getElementById("comingSoonMeta").textContent =
+        `${movie.year} · ${movie.genre} · ${movie.rating}`;
+
+      document.getElementById("comingSoonDetails").onclick = () => showMovieDetails(movie);
+    }
+
+    [...new Set(movies.map(movie => String(movie.year)))]
+      .sort((a, b) => Number(b) - Number(a))
+      .forEach(year => {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearFilter.appendChild(option);
+      });
+
+    [...new Set(movies.map(movie => movie.genre))].sort().forEach(genre => {
+      const option = document.createElement("option");
+      option.value = genre;
+      option.textContent = genre;
+      advancedGenreFilter.appendChild(option);
+    });
+
+    function loadProfiles() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        if (!Array.isArray(saved)) return [];
+
+        return saved
+          .filter(p => p && typeof p.id === "string" && typeof p.name === "string")
+          .map(p => ({
+            id: p.id,
+            name: p.name.slice(0, 24),
+            avatar: AVATARS.includes(p.avatar) ? p.avatar : AVATARS[0],
+            movieIds: Array.isArray(p.movieIds) ? p.movieIds.filter(id => typeof id === "string") : [],
+            continueWatching: Array.isArray(p.continueWatching)
+              ? p.continueWatching.filter(i => i && typeof i.movieId === "string" && Number.isFinite(i.openedAt))
+              : [],
+            viewingHistory: Array.isArray(p.viewingHistory)
+              ? p.viewingHistory.filter(i => i && typeof i.movieId === "string" && Number.isFinite(i.watchedAt))
+              : []
+          }));
+      } catch {
+        return [];
+      }
+    }
+
+    function saveProfiles() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
+        profileStatus.hidden = true;
+        return true;
+      } catch {
+        profileStatus.textContent = "The browser couldn't save your profile. Check browser storage or privacy settings.";
+        profileStatus.hidden = false;
+        return false;
+      }
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+        function getAllRatings() {
+      try { return JSON.parse(localStorage.getItem(RATINGS_KEY) || "{}"); }
+      catch { return {}; }
+    }
+
+    function getRating(movieId) {
+      return Number(getAllRatings()[activeProfile?.id]?.[movieId] || 0);
+    }
+
+    function setRating(movieId, rating) {
+      if (!activeProfile || !movieId) return;
+
+      const allRatings = getAllRatings();
+      allRatings[activeProfile.id] ||= {};
+      allRatings[activeProfile.id][movieId] = rating;
+
+      try { localStorage.setItem(RATINGS_KEY, JSON.stringify(allRatings)); } catch {}
+      renderPersonalizedHome();
+      renderMovies();
+
+      const movie = movies.find(item => item.id === movieId);
+      if (movie) showMovieDetails(movie);
+    }
+
+    function isComingSoon(movie) {
+      return /coming soon/i.test(movie?.badge || "");
+    }
+
+    function closeSearchSuggestions() {
+      searchSuggestions.hidden = true;
+      search.setAttribute("aria-expanded", "false");
+      search.removeAttribute("aria-activedescendant");
+      activeSuggestionIndex = -1;
+    }
+
+    function chooseSearchSuggestion(movie) {
+      if (!movie) return;
+
+      closeSearchSuggestions();
+
+      if (isComingSoon(movie)) {
+        showMyList = false;
+        activeGenre = "All";
+        search.value = "";
+        yearFilter.value = "all";
+        typeFilter.value = "all";
+        sortFilter.value = "default";
+        advancedGenreFilter.value = "All";
+        document.getElementById("myListToggle").setAttribute("aria-pressed", "false");
+        document.getElementById("collectionTitle").textContent = "Browse movies";
+        renderFilters();
+        renderMovies();
+        document.getElementById("comingSoonSection").scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+        return;
+      }
+
+      search.value = movie.title;
+      renderMovies();
+
+      const card = [...grid.querySelectorAll(".movie-card")].find(item =>
+        item.querySelector(`[data-play-id="${CSS.escape(movie.id)}"]`)
+      );
+
+      card?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center"
+      });
+    }
+
+    function renderSearchSuggestions() {
+      const term = search.value.trim().toLowerCase();
+      searchSuggestions.replaceChildren();
+
+      if (!term) {
+        currentSuggestions = [];
+        closeSearchSuggestions();
+        return;
+      }
+
+      currentSuggestions = movies
+        .filter(movie =>
+          `${movie.title} ${movie.genre} ${movie.year} ${movie.rating} ${movie.badge || ""}`
+            .toLowerCase()
+            .includes(term)
+        )
+        .slice(0, 8);
+
+      activeSuggestionIndex = -1;
+
+      if (!currentSuggestions.length) {
+        const empty = document.createElement("div");
+        empty.className = "search-suggestion-empty";
+        empty.textContent = "No matching movies found.";
+        searchSuggestions.appendChild(empty);
+      } else {
+        currentSuggestions.forEach((movie, index) => {
+          const option = document.createElement("button");
+          option.className = "search-suggestion";
+          option.type = "button";
+          option.id = `search-suggestion-${index}`;
+          option.dataset.suggestionIndex = String(index);
+          option.setAttribute("role", "option");
+          option.setAttribute("aria-selected", "false");
+
+          const poster = document.createElement("img");
+          poster.src = movie.poster;
+          poster.alt = "";
+          poster.loading = "lazy";
+          poster.addEventListener("error", () => { poster.hidden = true; });
+
+          const copy = document.createElement("span");
+          copy.className = "search-suggestion-copy";
+
+          const title = document.createElement("span");
+          title.className = "search-suggestion-title";
+          title.textContent = movie.title;
+
+          const meta = document.createElement("span");
+          meta.className = "search-suggestion-meta";
+          meta.textContent = `${movie.year} · ${movie.genre} · ${movie.rating}`;
+
+          copy.append(title, meta);
+          option.append(poster, copy);
+
+          if (movie.badge) {
+            const badge = document.createElement("span");
+            badge.className = "search-suggestion-badge";
+            badge.textContent = movie.badge;
+            option.appendChild(badge);
+          }
+
+          searchSuggestions.appendChild(option);
+        });
+      }
+
+      searchSuggestions.hidden = false;
+      search.setAttribute("aria-expanded", "true");
+      search.setAttribute("aria-controls", searchSuggestions.id);
+    }
+
+    function setActiveSuggestion(index) {
+      const options = [...searchSuggestions.querySelectorAll("[data-suggestion-index]")];
+      if (!options.length) return;
+
+      activeSuggestionIndex = (index + options.length) % options.length;
+
+      options.forEach((option, optionIndex) => {
+        const active = optionIndex === activeSuggestionIndex;
+        option.classList.toggle("active", active);
+        option.setAttribute("aria-selected", String(active));
+      });
+
+      const activeOption = options[activeSuggestionIndex];
+      search.setAttribute("aria-activedescendant", activeOption.id);
+      activeOption.scrollIntoView({ block: "nearest" });
+    }
+
+    function pruneContinueWatching(profile, now = Date.now()) {
+      if (!profile) return false;
+
+      const previous = Array.isArray(profile.continueWatching)
+        ? profile.continueWatching
+        : [];
+
+      profile.continueWatching = previous.filter(item =>
+        item &&
+        typeof item.movieId === "string" &&
+        Number.isFinite(item.openedAt) &&
+        item.openedAt <= now &&
+        now - item.openedAt < CONTINUE_WATCHING_TTL &&
+        movies.some(movie => movie.id === item.movieId)
+      );
+
+      return previous.length !== profile.continueWatching.length;
+    }
+
+    function refreshContinueWatching() {
+      if (!activeProfile) {
+        continueSection.hidden = true;
+        continueRow.replaceChildren();
+        clearTimeout(continueExpiryTimer);
+        continueExpiryTimer = null;
+        return;
+      }
+
+      if (pruneContinueWatching(activeProfile)) saveProfiles();
+
+      const entries = [...activeProfile.continueWatching]
+        .sort((a, b) => b.openedAt - a.openedAt);
+
+      if (!entries.length) {
+        continueSection.hidden = true;
+        continueRow.replaceChildren();
+        clearTimeout(continueExpiryTimer);
+        continueExpiryTimer = null;
+        return;
+      }
+
+      continueSection.hidden = false;
+      continueRow.innerHTML = entries.map(item => {
+        const movie = movies.find(entry => entry.id === item.movieId);
+        if (!movie) return "";
+
+        const hoursLeft = Math.max(
+          1,
+          Math.ceil((CONTINUE_WATCHING_TTL - (Date.now() - item.openedAt)) / 3600000)
+        );
+
+        return `
+          <article class="continue-card">
+            <button class="continue-poster" type="button"
+              data-continue-play="${escapeHTML(movie.id)}"
+              aria-label="Continue watching ${escapeHTML(movie.title)}">
+              <img src="${escapeHTML(movie.poster)}" alt="" loading="lazy">
+              <span class="continue-play" aria-hidden="true">
+                <span class="continue-play-icon">▶</span>
+              </span>
+            </button>
+            <button class="continue-remove" type="button"
+              data-continue-remove="${escapeHTML(movie.id)}"
+              aria-label="Remove ${escapeHTML(movie.title)} from Continue Watching">×</button>
+            <div class="continue-card-info">
+              <span class="continue-card-title">${escapeHTML(movie.title)}</span>
+              <span class="continue-card-expiry">Expires in about ${hoursLeft}h</span>
+            </div>
+          </article>`;
+      }).join("");
+
+      scheduleContinueExpiry(entries);
+    }
+
+    function scheduleContinueExpiry(entries) {
+      clearTimeout(continueExpiryTimer);
+
+      if (!entries.length) {
+        continueExpiryTimer = null;
+        return;
+      }
+
+      const expiry = Math.min(
+        ...entries.map(item => item.openedAt + CONTINUE_WATCHING_TTL)
+      );
+
+      continueExpiryTimer = setTimeout(
+        refreshContinueWatching,
+        Math.max(0, expiry - Date.now() + 50)
+      );
+    }
+
+    function recordMovieOpened(movie) {
+      if (!activeProfile || !movie || isComingSoon(movie)) return;
+
+      const now = Date.now();
+      pruneContinueWatching(activeProfile);
+
+      activeProfile.continueWatching = activeProfile.continueWatching.filter(
+        item => item.movieId !== movie.id
+      );
+      activeProfile.continueWatching.push({ movieId: movie.id, openedAt: now });
+
+      const history = Array.isArray(activeProfile.viewingHistory)
+        ? activeProfile.viewingHistory
+        : [];
+
+      activeProfile.viewingHistory = history
+        .filter(item => item.movieId !== movie.id)
+        .concat({ movieId: movie.id, watchedAt: now })
+        .sort((a, b) => b.watchedAt - a.watchedAt);
+
+      saveProfiles();
+      refreshContinueWatching();
+      renderPersonalizedHome();
+    }
+
+    function removeFromContinueWatching(movieId) {
+      if (!activeProfile) return;
+
+      activeProfile.continueWatching = activeProfile.continueWatching.filter(
+        item => item.movieId !== movieId
+      );
+
+      saveProfiles();
+      refreshContinueWatching();
+      renderPersonalizedHome();
+    }
+
+    function setProfileView(view) {
+      const choosing = view === "choose";
+      chooseProfileView.hidden = !choosing;
+      addProfileView.hidden = choosing;
+      chooseProfileTab.classList.toggle("active", choosing);
+      addProfileTab.classList.toggle("active", !choosing);
+      chooseProfileTab.setAttribute("aria-selected", String(choosing));
+      addProfileTab.setAttribute("aria-selected", String(!choosing));
+      profileStatus.hidden = true;
+
+      if (!choosing) {
+        renderAvatarChoices();
+        profileNameInput.focus();
+      }
+    }
+
+    function renderAvatarChoices() {
+      avatarOptions.innerHTML = AVATARS.map((avatar, index) => `
+        <button class="avatar-choice ${index === selectedAvatarIndex ? "selected" : ""}"
+          type="button" data-avatar-index="${index}"
+          aria-label="Choose avatar ${index + 1}"
+          aria-pressed="${index === selectedAvatarIndex}">
+          <img src="${escapeHTML(avatar)}" alt="" loading="lazy">
+        </button>`).join("");
+    }
+
+    function renderProfiles() {
+      if (!profiles.length) {
+        profileList.innerHTML = `
+          <div class="no-profiles">
+            No profiles yet. Choose <strong>Add profile</strong> above to create one.
+          </div>`;
+        return;
+      }
+
+      profileList.innerHTML = profiles.map((profile, index) => `
+        <button class="profile-card" type="button" data-profile-index="${index}">
+          <img src="${escapeHTML(profile.avatar)}" alt="" loading="lazy">
+          <span>${escapeHTML(profile.name)}</span>
+        </button>`).join("");
+    }
+
+    function enterProfile(profile) {
+      activeProfile = profile;
+      showMyList = false;
+      activeGenre = "All";
+      search.value = "";
+      closeSearchSuggestions();
+      activeFeaturedIndex = 0;
+      yearFilter.value = "all";
+      typeFilter.value = "all";
+      sortFilter.value = "default";
+      advancedGenreFilter.value = "All";
+
+      pruneContinueWatching(profile);
+      saveProfiles();
+
+      document.getElementById("activeAvatar").src = profile.avatar;
+      document.getElementById("activeAvatar").alt = `${profile.name}'s profile`;
+      document.getElementById("activeProfileName").textContent = profile.name;
+      document.getElementById("myListToggle").setAttribute("aria-pressed", "false");
+      document.getElementById("collectionTitle").textContent = "Browse movies";
+
+      profileGate.hidden = true;
+      app.hidden = false;
+      renderFilters();
+      renderMovies();
+      renderFeatured(false);
+      renderComingSoon();
+      refreshContinueWatching();
+      renderPersonalizedHome();
+      startCarousel();
+      window.scrollTo(0, 0);
+    }
+
+    function showAllMovies() {
+      showMyList = false;
+      activeGenre = "All";
+      search.value = "";
+      closeSearchSuggestions();
+      yearFilter.value = "all";
+      typeFilter.value = "all";
+      sortFilter.value = "default";
+      advancedGenreFilter.value = "All";
+
+      document.getElementById("myListToggle").setAttribute("aria-pressed", "false");
+      document.getElementById("collectionTitle").textContent = "Browse movies";
+
+      renderFilters();
+      renderMovies();
+    }
+
+    function showProfilePicker() {
+      stopCarousel();
+      closePlayer();
+      closeMovieDetails();
+      activeProfile = null;
+      app.hidden = true;
+      profileGate.hidden = false;
+      refreshContinueWatching();
+      renderProfiles();
+      setProfileView("choose");
+      window.scrollTo(0, 0);
+    }
+
+    function toggleMyList() {
+      showMyList = !showMyList;
+      document.getElementById("myListToggle")
+        .setAttribute("aria-pressed", String(showMyList));
+      document.getElementById("collectionTitle").textContent =
+        showMyList ? "Your List" : "Browse movies";
+      renderMovies();
+    }
+
+    function renderFilters() {
+      const genres = ["All", ...new Set(movies.map(movie => movie.genre))];
+
+      filters.innerHTML = genres.map(genre => `
+        <button class="filter ${genre === activeGenre ? "active" : ""}"
+          type="button" data-genre="${escapeHTML(genre)}"
+          aria-pressed="${genre === activeGenre}">
+          ${escapeHTML(genre)}
+        </button>`).join("");
+    }
+
+    function renderMovies() {
+      if (!activeProfile) return;
+
+      const term = search.value.trim().toLowerCase();
+      const savedIds = new Set(activeProfile.movieIds);
+      const ratings = getAllRatings()[activeProfile.id] || {};
+
+      let shown = movies.filter(movie => {
+        const regularMovie = !isComingSoon(movie);
+        const genreMatch = activeGenre === "All" || movie.genre === activeGenre;
+        const searchMatch =
+          `${movie.title} ${movie.genre} ${movie.year} ${movie.rating}`
+            .toLowerCase()
+            .includes(term);
+        const listMatch = !showMyList || savedIds.has(movie.id);
+        const yearMatch =
+          yearFilter.value === "all" || String(movie.year) === yearFilter.value;
+        const typeMatch =
+          typeFilter.value === "all" || (movie.type || "Movie") === typeFilter.value;
+
+        return regularMovie && genreMatch && searchMatch && listMatch && yearMatch && typeMatch;
+      });
+
+      if (sortFilter.value === "az") {
+        shown.sort((a, b) => a.title.localeCompare(b.title));
+      } else if (sortFilter.value === "recent") {
+        shown.sort((a, b) => movies.indexOf(b) - movies.indexOf(a));
+      } else if (sortFilter.value === "rated") {
+        shown.sort((a, b) =>
+          Number(ratings[b.id] || 0) - Number(ratings[a.id] || 0) ||
+          a.title.localeCompare(b.title)
+        );
+      }
+
+      if (!shown.length) {
+        grid.innerHTML = `<div class="empty-state">${showMyList
+          ? "Your List is empty or has no matches. Add movies using the button on a movie card."
+          : "No movies found. Try another title or filter."}</div>`;
+        return;
+      }
+
+      const grouped = new Map();
+      shown.forEach(movie => {
+        if (!grouped.has(movie.genre)) grouped.set(movie.genre, []);
+        grouped.get(movie.genre).push(movie);
+      });
+
+      grid.innerHTML = [...grouped.entries()].map(([genre, genreMovies]) => `
+        <section class="genre-shelf" aria-label="${escapeHTML(genre)} movies">
+          <h2>${escapeHTML(genre)}</h2>
+          <div class="genre-row">
+            ${genreMovies.map(movie => {
+              const isSaved = savedIds.has(movie.id);
+
+              return `
+                <article class="movie-card">
+                  <div class="poster">
+                    <img class="poster-image" src="${escapeHTML(movie.poster)}"
+                      alt="${escapeHTML(movie.title)} poster" loading="lazy">
+                    ${movie.badge ? `<span class="badge">${escapeHTML(movie.badge)}</span>` : ""}
+                    <button class="poster-action" type="button"
+                      data-play-id="${escapeHTML(movie.id)}"
+                      aria-label="Play ${escapeHTML(movie.title)}">
+                      <span class="play-circle" aria-hidden="true">▶</span>
+                    </button>
+                  </div>
+                  <div class="movie-info">
+                    <h3 class="movie-title" title="${escapeHTML(movie.title)}">
+                      ${escapeHTML(movie.title)}
+                    </h3>
+                    <div class="movie-meta">
+                      ${escapeHTML(movie.year)} · ${escapeHTML(movie.genre)} · ${escapeHTML(movie.rating)}
+                    </div>
+                    <div class="card-actions">
+                      <button class="list-button ${isSaved ? "saved" : ""}"
+                        type="button" data-list-id="${escapeHTML(movie.id)}"
+                        aria-pressed="${isSaved}">
+                        ${isSaved ? "✓ Added to Your List" : "+ Add to Your List"}
+                      </button>
+                      <button class="movie-card-details" type="button"
+                        data-details-id="${escapeHTML(movie.id)}">More information</button>
+                    </div>
+                  </div>
+                </article>`;
+            }).join("")}
+          </div>
+        </section>`).join("");
+    }
+
+    function updateFeaturedListButton(movie) {
+      const button = document.getElementById("featuredListButton");
+      const saved = Boolean(activeProfile?.movieIds.includes(movie.id));
+
+      button.textContent = saved ? "✓ Added to Your List" : "＋ Add to Your List";
+      button.classList.toggle("saved", saved);
+      button.setAttribute("aria-pressed", String(saved));
+    }
+
+    function updateFeaturedText(movie) {
+      document.getElementById("heroEyebrow").textContent = "Featured movie";
+      document.getElementById("heroTitle").textContent = movie.title;
+      document.getElementById("heroDescription").textContent =
+        `Discover ${movie.title} in your collection. Select the banner or Play featured to watch.`;
+      document.getElementById("heroMeta").textContent =
+        `${movie.year} · ${movie.genre} · ${movie.rating}`;
+
+      updateFeaturedListButton(movie);
+
+      document.getElementById("heroPlayArea").setAttribute(
+        "aria-label",
+        `Play featured movie: ${movie.title}`
+      );
+
+      document.getElementById("carouselDots").innerHTML =
+        featuredMovies.map((item, index) => `
+          <button class="carousel-dot ${index === activeFeaturedIndex ? "active" : ""}"
+            type="button" data-slide="${index}"
+            aria-label="Show featured movie: ${escapeHTML(item.title)}"
+            aria-current="${index === activeFeaturedIndex ? "true" : "false"}"></button>`).join("");
+    }
+
+    function renderFeatured(animate = true) {
+      if (!featuredMovies.length) return;
+
+      const movie = featuredMovies[activeFeaturedIndex];
+
+      if (!animate || !heroImageCurrent.style.backgroundImage) {
+        heroImageCurrent.style.backgroundImage = `url("${movie.poster}")`;
+        heroImageCurrent.classList.add("current");
+        heroImageCurrent.classList.remove("fading");
+        heroImageNext.classList.remove("visible");
+        updateFeaturedText(movie);
+        return;
+      }
+
+      clearTimeout(textTimer);
+      clearTimeout(imageTimer);
+      heroContent.classList.add("is-changing");
+      heroImageNext.style.backgroundImage = `url("${movie.poster}")`;
+
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        heroImageNext.classList.add("visible");
+        heroImageCurrent.classList.add("fading");
+      }));
+
+      textTimer = setTimeout(() => {
+        updateFeaturedText(movie);
+        heroContent.classList.remove("is-changing");
+      }, 180);
+
+      imageTimer = setTimeout(() => {
+        heroImageCurrent.style.backgroundImage = `url("${movie.poster}")`;
+        heroImageCurrent.classList.remove("fading");
+        heroImageNext.classList.remove("visible");
+      }, 700);
+    }
+
+    function stopCarousel() {
+      if (carouselTimer !== null) {
+        clearInterval(carouselTimer);
+        carouselTimer = null;
+      }
+    }
+
+    function startCarousel() {
+      stopCarousel();
+
+      if (
+        !activeProfile ||
+        modal.classList.contains("open") ||
+        !detailsModal.hidden ||
+        document.hidden ||
+        featuredMovies.length < 2 ||
+        matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) return;
+
+      carouselTimer = setInterval(() => {
+        activeFeaturedIndex = (activeFeaturedIndex + 1) % featuredMovies.length;
+        renderFeatured(true);
+      }, 4500);
+    }
+
+    function moveCarousel(direction) {
+      if (featuredMovies.length < 2) return;
+
+      activeFeaturedIndex =
+        (activeFeaturedIndex + direction + featuredMovies.length) % featuredMovies.length;
+
+      renderFeatured(true);
+      startCarousel();
+    }
+
+    function getDriveDetails(url) {
+      try {
+        const parsed = new URL(url);
+        if (
+          parsed.hostname !== "drive.google.com" &&
+          !parsed.hostname.endsWith(".drive.google.com")
+        ) return null;
+
+        const id =
+          parsed.pathname.match(/\/file\/d\/([^/]+)/)?.[1] ||
+          parsed.searchParams.get("id") ||
+          "";
+
+        if (!id) return null;
+
+        return {
+          id,
+          resourcekey: parsed.searchParams.get("resourcekey") || ""
+        };
+      } catch {
+        return null;
+      }
+    }
+
+    function resetPlayer() {
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+      video.hidden = true;
+      drivePlayer.removeAttribute("src");
+      drivePlayer.hidden = true;
+      videoMessage.hidden = true;
+      videoMessage.textContent = "";
+    }
+
+    function openMovie(movie) {
+      if (!movie) return;
+
+      if (isComingSoon(movie)) {
+        document.getElementById("comingSoonSection").scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+        return;
+      }
+
+      closeMovieDetails();
+      stopCarousel();
+      recordMovieOpened(movie);
+      document.getElementById("playerTitle").textContent = movie.title;
+      modal.classList.add("open");
+      document.body.style.overflow = "hidden";
+      resetPlayer();
+
+      const drive = getDriveDetails(movie.mediaUrl);
+
+      if (drive) {
+        const previewUrl = new URL(
+          `https://drive.google.com/file/d/${encodeURIComponent(drive.id)}/preview`
+        );
+
+        if (drive.resourcekey) {
+          previewUrl.searchParams.set("resourcekey", drive.resourcekey);
+        }
+
+        drivePlayer.src = previewUrl.href;
+        drivePlayer.hidden = false;
+        return;
+      }
+
+      if (!movie.mediaUrl) {
+        videoMessage.textContent = "No playable video URL has been set for this movie.";
+        videoMessage.hidden = false;
+        return;
+      }
+
+      video.src = movie.mediaUrl;
+      video.hidden = false;
+      video.load();
+      video.play().catch(() => {
+        videoMessage.textContent =
+          "Playback did not start automatically. Use the player controls or check that the video URL is accessible.";
+        videoMessage.hidden = false;
+      });
+    }
+
+    function closePlayer() {
+      modal.classList.remove("open");
+      document.body.style.overflow = "";
+      resetPlayer();
+
+      if (activeProfile && profileGate.hidden && detailsModal.hidden) {
+        startCarousel();
+      }
+    }
+
+    function toggleMovieInList(movie) {
+      if (!activeProfile || !movie || isComingSoon(movie)) return;
+
+      const ids = new Set(activeProfile.movieIds);
+      if (ids.has(movie.id)) ids.delete(movie.id);
+      else ids.add(movie.id);
+
+      activeProfile.movieIds = [...ids];
+      saveProfiles();
+      renderMovies();
+
+      if (featuredMovies[activeFeaturedIndex]?.id === movie.id) {
+        updateFeaturedListButton(movie);
+      }
+    }
+
+    function personalCard(movie) {
+      const card = document.createElement("article");
+      card.className = "personal-card";
+      card.innerHTML = `
+        <img src="${escapeHTML(movie.poster)}"
+          alt="${escapeHTML(movie.title)} poster" loading="lazy">
+        <span class="personal-card-title" title="${escapeHTML(movie.title)}">
+          ${escapeHTML(movie.title)}
+        </span>
+        <div class="personal-card-actions">
+          <button type="button" data-personal-play="${escapeHTML(movie.id)}">▶ Play</button>
+          <button type="button" data-personal-details="${escapeHTML(movie.id)}">Details</button>
+        </div>`;
+      return card;
+    }
+
+    function renderPersonalizedHome() {
+      if (!activeProfile) {
+        personalHome.hidden = true;
+        recentlyWatchedBlock.hidden = true;
+        return;
+      }
+
+      personalHome.hidden = false;
+
+      const history = [...(activeProfile.viewingHistory || [])]
+        .filter(item =>
+          item &&
+          typeof item.movieId === "string" &&
+          Number.isFinite(item.watchedAt)
+        )
+        .sort((a, b) => b.watchedAt - a.watchedAt)
+        .map(item => ({
+          item,
+          movie: movies.find(movie => movie.id === item.movieId)
+        }))
+        .filter(row => row.movie && !isComingSoon(row.movie));
+
+      recentlyWatchedBlock.hidden = history.length === 0;
+      recentlyWatchedRow.replaceChildren(
+        ...history.slice(0, 12).map(row => personalCard(row.movie))
+      );
+
+      const watchedIds = new Set(history.map(row => row.movie.id));
+      const genreCounts = new Map();
+
+      history.forEach(({ movie }) => {
+        genreCounts.set(movie.genre, (genreCounts.get(movie.genre) || 0) + 1);
+      });
+
+      const profileRatings = getAllRatings()[activeProfile.id] || {};
+      Object.entries(profileRatings).forEach(([id, value]) => {
+        const movie = movies.find(item => item.id === id);
+        if (movie && !isComingSoon(movie) && Number(value) >= 4) {
+          genreCounts.set(movie.genre, (genreCounts.get(movie.genre) || 0) + 1);
+        }
+      });
+
+      const favoriteGenres = [...genreCounts.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .map(([genre]) => genre)
+        .slice(0, 5);
+
+      const favoriteBlock = document.getElementById("favoriteGenresBlock");
+      const favoriteRow = document.getElementById("favoriteGenresRow");
+      favoriteBlock.hidden = favoriteGenres.length === 0;
+
+      favoriteRow.replaceChildren(...favoriteGenres.map(genre => {
+        const button = document.createElement("button");
+        button.className = "personal-genre";
+        button.type = "button";
+        button.textContent = genre;
+        button.addEventListener("click", () => {
+          showAllMovies();
+          activeGenre = genre;
+          advancedGenreFilter.value = genre;
+          renderFilters();
+          renderMovies();
+          document.getElementById("movies").scrollIntoView({ behavior: "smooth" });
+        });
+        return button;
+      }));
+
+      const recommendationsBlock = document.getElementById("recommendationsBlock");
+      const recommendationsRow = document.getElementById("recommendationsRow");
+
+      if (!history.length) {
+        recommendationsBlock.hidden = true;
+        recommendationsRow.replaceChildren();
+      } else {
+        const recommendations = movies
+          .filter(movie => !isComingSoon(movie) && !watchedIds.has(movie.id))
+          .sort((a, b) => {
+            const genreScore =
+              (genreCounts.get(b.genre) || 0) - (genreCounts.get(a.genre) || 0);
+            if (genreScore !== 0) return genreScore;
+
+            const ratingScore =
+              Number(profileRatings[b.id] || 0) - Number(profileRatings[a.id] || 0);
+            return ratingScore || movies.indexOf(a) - movies.indexOf(b);
+          })
+          .slice(0, 10);
+
+        recommendationsBlock.hidden = recommendations.length === 0;
+        recommendationsRow.replaceChildren(...recommendations.map(personalCard));
+      }
+
+      const becauseBlock = document.getElementById("becauseBlock");
+      const becauseRow = document.getElementById("becauseRow");
+
+      if (history.length) {
+        const latestMovie = history[0].movie;
+        const similarMovies = movies
+          .filter(movie =>
+            !isComingSoon(movie) &&
+            movie.id !== latestMovie.id &&
+            movie.genre === latestMovie.genre
+          )
+          .slice(0, 8);
+
+        document.getElementById("becauseTitle").textContent =
+          `Because you watched ${latestMovie.title}`;
+
+        becauseBlock.hidden = similarMovies.length === 0;
+        becauseRow.replaceChildren(...similarMovies.map(personalCard));
+      } else {
+        becauseBlock.hidden = true;
+        becauseRow.replaceChildren();
+      }
+    }
+
+    function showMovieDetails(movie) {
+      if (!movie) return;
+      currentDetailsMovieId = movie.id;
+
+      document.getElementById("detailsPoster").src = movie.poster;
+      document.getElementById("detailsPoster").alt = `${movie.title} poster`;
+      document.getElementById("detailsTitle").textContent = movie.title;
+      document.getElementById("detailsMeta").textContent =
+        `${movie.year} · ${movie.type || "Movie"} · ${movie.rating || "Rating not listed"}`;
+      document.getElementById("detailsDescription").textContent =
+        movie.description || (isComingSoon(movie)
+          ? "This title is coming soon. Check back for updates."
+          : "A description has not been added for this movie yet.");
+      document.getElementById("detailsGenre").textContent = movie.genre || "Not listed";
+      document.getElementById("detailsRuntime").textContent = movie.runtime || "Not added yet";
+      document.getElementById("detailsDirector").textContent = movie.director || "Not added yet";
+      document.getElementById("detailsCast").textContent = movie.cast || "Not added yet";
+
+      document.getElementById("detailsTrailer").href =
+        `https://www.youtube.com/results?search_query=${encodeURIComponent(
+          `${movie.title} ${movie.year} official trailer`
+        )}`;
+
+      const rating = getRating(movie.id);
+      document.getElementById("ratingStars").innerHTML = [1, 2, 3, 4, 5].map(value => `
+        <button class="rating-star ${value <= rating ? "selected" : ""}" type="button"
+          data-rating="${value}" aria-label="Rate ${value} out of 5 stars"
+          aria-pressed="${value === rating}">★</button>`).join("");
+
+      document.getElementById("ratingCaption").textContent =
+        rating ? `Your rating: ${rating} / 5` : "Not rated yet";
+
+      const similar = movies
+        .filter(item =>
+          !isComingSoon(item) &&
+          item.id !== movie.id &&
+          item.genre === movie.genre
+        )
+        .slice(0, 6);
+
+      const similarSection = document.getElementById("similarSection");
+      const similarRow = document.getElementById("similarRow");
+      similarSection.hidden = similar.length === 0;
+      similarRow.innerHTML = similar.map(item => `
+        <button class="similar-card" type="button" data-similar-id="${escapeHTML(item.id)}">
+          <img src="${escapeHTML(item.poster)}"
+            alt="${escapeHTML(item.title)} poster" loading="lazy">
+          <span class="similar-card-title">${escapeHTML(item.title)}</span>
+        </button>`).join("");
+
+      detailsModal.hidden = false;
+      document.body.style.overflow = "hidden";
+      stopCarousel();
+    }
+
+    function closeMovieDetails() {
+      detailsModal.hidden = true;
+      document.body.style.overflow = "";
+
+      if (activeProfile && profileGate.hidden && !modal.classList.contains("open")) {
+        startCarousel();
+      }
+    }
+
+    chooseProfileTab.addEventListener("click", () => setProfileView("choose"));
+    addProfileTab.addEventListener("click", () => setProfileView("add"));
+
+    profileList.addEventListener("click", event => {
+      const card = event.target.closest("[data-profile-index]");
+      if (!card) return;
+
+      const profile = profiles[Number(card.dataset.profileIndex)];
+      if (profile) enterProfile(profile);
+    });
+
+    document.getElementById("backToProfiles").addEventListener("click", () => {
+      profileForm.reset();
+      selectedAvatarIndex = 0;
+      setProfileView("choose");
+    });
+
+    avatarOptions.addEventListener("click", event => {
+      const choice = event.target.closest("[data-avatar-index]");
+      if (!choice) return;
+
+      selectedAvatarIndex = Number(choice.dataset.avatarIndex);
+      renderAvatarChoices();
+    });
+
+    profileForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      const name = profileNameInput.value.trim();
+      if (!name) {
+        profileNameInput.focus();
+        return;
+      }
+
+      const profile = {
+        id: window.crypto?.randomUUID
+          ? window.crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        name: name.slice(0, 24),
+        avatar: AVATARS[selectedAvatarIndex] || AVATARS[0],
+        movieIds: [],
+        continueWatching: [],
+        viewingHistory: []
+      };
+
+      profiles.push(profile);
+      saveProfiles();
+      profileForm.reset();
+      selectedAvatarIndex = 0;
+      renderProfiles();
+      enterProfile(profile);
+    });
+
+    document.getElementById("switchProfile").addEventListener("click", showProfilePicker);
+    document.getElementById("myListToggle").addEventListener("click", toggleMyList);
+
+    document.querySelectorAll('.nav-links a[href="#home"], .nav-links a[href="#movies"]')
+      .forEach(link => link.addEventListener("click", showAllMovies));
+
+    advancedSearchToggle.addEventListener("click", () => {
+      const opening = advancedSearchPanel.hidden;
+      advancedSearchPanel.hidden = !opening;
+      advancedSearchToggle.setAttribute("aria-expanded", String(opening));
+    });
+
+    document.addEventListener("click", event => {
+      if (!event.target.closest(".topbar-search")) {
+        advancedSearchPanel.hidden = true;
+        advancedSearchToggle.setAttribute("aria-expanded", "false");
+      }
+
+      if (!event.target.closest(".topbar-search")) {
+        closeSearchSuggestions();
+      }
+    });
+
+    search.addEventListener("input", () => {
+      renderMovies();
+      renderSearchSuggestions();
+    });
+
+    search.addEventListener("focus", renderSearchSuggestions);
+
+    search.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closeSearchSuggestions();
+        return;
+      }
+
+      if (searchSuggestions.hidden || !currentSuggestions.length) return;
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        setActiveSuggestion(activeSuggestionIndex + 1);
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        setActiveSuggestion(
+          activeSuggestionIndex < 0
+            ? currentSuggestions.length - 1
+            : activeSuggestionIndex - 1
+        );
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+        chooseSearchSuggestion(
+          currentSuggestions[activeSuggestionIndex < 0 ? 0 : activeSuggestionIndex]
+        );
+      }
+    });
+
+    searchSuggestions.addEventListener("click", event => {
+      const option = event.target.closest("[data-suggestion-index]");
+      if (!option) return;
+
+      chooseSearchSuggestion(
+        currentSuggestions[Number(option.dataset.suggestionIndex)]
+      );
+    });
+
+    document.getElementById("featuredPlay").addEventListener("click", () => {
+      openMovie(featuredMovies[activeFeaturedIndex]);
+    });
+
+    document.getElementById("heroPlayArea").addEventListener("click", () => {
+      openMovie(featuredMovies[activeFeaturedIndex]);
+    });
+
+    document.getElementById("featuredListButton").addEventListener("click", () => {
+      toggleMovieInList(featuredMovies[activeFeaturedIndex]);
+    });
+
+    document.getElementById("carouselPrevious").addEventListener("click", () => moveCarousel(-1));
+    document.getElementById("carouselNext").addEventListener("click", () => moveCarousel(1));
+
+    document.getElementById("carouselDots").addEventListener("click", event => {
+      const dot = event.target.closest("[data-slide]");
+      if (!dot) return;
+
+      activeFeaturedIndex = Number(dot.dataset.slide);
+      renderFeatured(true);
+      startCarousel();
+    });
+
+    hero.addEventListener("mouseenter", stopCarousel);
+    hero.addEventListener("mouseleave", startCarousel);
+    hero.addEventListener("focusin", stopCarousel);
+    hero.addEventListener("focusout", event => {
+      if (!hero.contains(event.relatedTarget)) startCarousel();
+    });
+
+    filters.addEventListener("click", event => {
+      const button = event.target.closest("[data-genre]");
+      if (!button) return;
+
+      activeGenre = button.dataset.genre;
+      advancedGenreFilter.value = activeGenre;
+      renderFilters();
+      renderMovies();
+    });
+
+    advancedGenreFilter.addEventListener("change", () => {
+      activeGenre = advancedGenreFilter.value;
+      renderFilters();
+      renderMovies();
+    });
+
+    [yearFilter, typeFilter, sortFilter].forEach(select =>
+      select.addEventListener("change", renderMovies)
+    );
+
+    grid.addEventListener("click", event => {
+      const play = event.target.closest("[data-play-id]");
+      if (play) {
+        openMovie(movies.find(movie => movie.id === play.dataset.playId));
+        return;
+      }
+
+      const list = event.target.closest("[data-list-id]");
+      if (list) {
+        toggleMovieInList(movies.find(movie => movie.id === list.dataset.listId));
+        return;
+      }
+
+      const details = event.target.closest("[data-details-id]");
+      if (details) {
+        showMovieDetails(movies.find(movie => movie.id === details.dataset.detailsId));
+      }
+    });
+
+    continueRow.addEventListener("click", event => {
+      const remove = event.target.closest("[data-continue-remove]");
+      if (remove) {
+        removeFromContinueWatching(remove.dataset.continueRemove);
+        return;
+      }
+
+      const play = event.target.closest("[data-continue-play]");
+      if (play) {
+        openMovie(movies.find(movie => movie.id === play.dataset.continuePlay));
+      }
+    });
+
+    personalHome.addEventListener("click", event => {
+      const play = event.target.closest("[data-personal-play]");
+      if (play) {
+        openMovie(movies.find(movie => movie.id === play.dataset.personalPlay));
+        return;
+      }
+
+      const details = event.target.closest("[data-personal-details]");
+      if (details) {
+        showMovieDetails(movies.find(movie => movie.id === details.dataset.personalDetails));
+      }
+    });
+
+    detailsModal.addEventListener("click", event => {
+      if (event.target === detailsModal || event.target.closest("#detailsClose")) {
+        closeMovieDetails();
+        return;
+      }
+
+      const star = event.target.closest("[data-rating]");
+      if (star) {
+        setRating(currentDetailsMovieId, Number(star.dataset.rating));
+        return;
+      }
+
+      const similar = event.target.closest("[data-similar-id]");
+      if (similar) {
+        showMovieDetails(movies.find(movie => movie.id === similar.dataset.similarId));
+      }
+    });
+
+    document.getElementById("detailsPlay").addEventListener("click", () => {
+      const movie = movies.find(item => item.id === currentDetailsMovieId);
+      closeMovieDetails();
+      openMovie(movie);
+    });
+
+    document.getElementById("detailsClose").addEventListener("click", closeMovieDetails);
+    document.getElementById("closeBtn").addEventListener("click", closePlayer);
+
+    document.getElementById("fullscreenBtn").addEventListener("click", async () => {
+      try {
+        if (!document.fullscreenElement) await videoFrame.requestFullscreen();
+        else await document.exitFullscreen();
+      } catch {
+        // Fullscreen may not be available in every browser.
+      }
+    });
+
+    modal.addEventListener("click", event => {
+      if (event.target === modal) closePlayer();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        if (!detailsModal.hidden) closeMovieDetails();
+        else if (modal.classList.contains("open")) closePlayer();
+      }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        stopCarousel();
+      } else {
+        startCarousel();
+        if (activeProfile) {
+          refreshContinueWatching();
+          renderPersonalizedHome();
+        }
+      }
+    });
+
+    window.addEventListener("focus", () => {
+      if (activeProfile) {
+        refreshContinueWatching();
+        renderPersonalizedHome();
+      }
+    });
+
+    video.addEventListener("error", () => {
+      if (!video.hidden && video.src) {
+        videoMessage.textContent =
+          "This video could not be played. Check that the URL is a direct video link supported by your browser.";
+        videoMessage.hidden = false;
+      }
+    });
+
+    grid.addEventListener("error", event => {
+      if (event.target instanceof HTMLImageElement) event.target.hidden = true;
+    }, true);
+
+    continueRow.addEventListener("error", event => {
+      if (event.target instanceof HTMLImageElement) event.target.hidden = true;
+    }, true);
+
+    renderProfiles();
+    renderAvatarChoices();
+    renderComingSoon();
+  </script>
+</body>
+</html>
