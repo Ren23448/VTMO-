@@ -1711,6 +1711,17 @@
       });
     }
 
+    function matchesAdvancedFilters(movie) {
+  return (
+    (activeGenre === "All" || movie.genre === activeGenre) &&
+    (yearFilter.value === "all" ||
+      String(movie.year) === yearFilter.value) &&
+    (typeFilter.value === "all" ||
+      (movie.type || "Movie") === typeFilter.value)
+  );
+}
+
+
     function renderSearchSuggestions() {
       const term = search.value.trim().toLowerCase();
       searchSuggestions.replaceChildren();
@@ -1722,12 +1733,13 @@
       }
 
       currentSuggestions = movies
-        .filter(movie =>
-          `${movie.title} ${movie.genre} ${movie.year} ${movie.rating} ${movie.badge || ""}`
-            .toLowerCase()
-            .includes(term)
-        )
-        .slice(0, 8);
+  .filter(movie =>
+    matchesAdvancedFilters(movie) &&
+    `${movie.title} ${movie.genre} ${movie.year} ${movie.rating} ${movie.badge || ""}`
+      .toLowerCase()
+      .includes(term)
+  )
+  .slice(0, 8);
 
       activeSuggestionIndex = -1;
 
@@ -2711,14 +2723,19 @@
       renderMovies();
     });
 
+    
     advancedGenreFilter.addEventListener("change", () => {
       activeGenre = advancedGenreFilter.value;
       renderFilters();
       renderMovies();
+      renderSearchSuggestions();
     });
 
     [yearFilter, typeFilter, sortFilter].forEach(select =>
-      select.addEventListener("change", renderMovies)
+      select.addEventListener("change", () => {
+      renderMovies();
+      renderSearchSuggestions();
+    })
     );
 
     grid.addEventListener("click", event => {
